@@ -3,17 +3,27 @@ from tkinter import *
 #import tkinter.messagebox
 import matplotlib.pyplot as plt
 
+#Definimos el metodo para graficar las respuestas
+def move_spines():
+    fix, ax = plt.subplots()
+    for spine in ["left", "bottom"]:
+        ax.spines[spine].set_position("zero")
+    
+    for spine in ["right", "top"]:
+        ax.spines[spine].set_color("none")
+    
+    return ax
 #Metodo para calcular la suma
 def Suma():
    n1=complex(caja1.get())
    n2=complex(caja2.get())
    suma=n1+n2
    print (suma)
-   ax = move_spines()
+   """ax = move_spines()
    ax.set_xlim(-100, 100)
    ax.set_ylim(-100, 100)
    ax.grid()
-   ax.scatter(suma.real, suma.imag)
+   ax.scatter(suma.real, suma.imag)"""
    #tkinter.messagebox.showinfo("Mensaje","El resultado es: %f + j%f"%suma.real + suma.imag)
    caja1.delete(0,20)
    caja2.delete(0,20)
@@ -47,16 +57,6 @@ def Division():
    #tkinter.messagebox.showinfo("Mensaje","El resultado es: %.2f"%suma)
    caja1.delete(0,20)
    caja2.delete(0,20)
-#Definimos el metodo para graficar las respuestas
-def move_spines():
-    fix, ax = plt.subplots()
-    for spine in ["left", "bottom"]:
-        ax.spines[spine].set_position("zero")
-    
-    for spine in ["right", "top"]:
-        ax.spines[spine].set_color("none")
-    
-    return ax
 #Creacion del GUI
 gui = Tk()
 #Titulo del GUI
