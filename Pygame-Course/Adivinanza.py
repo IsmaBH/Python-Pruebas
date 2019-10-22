@@ -13,6 +13,7 @@ while intentos < 10:
 	numero_adivinar = ''
 	numero_adivinar = input()
 	numero_adivinar = int(numero_adivinar)
+	intentos = intentos + 1
 
 	if numero_adivinar < numero:
 		print("El numero que he pensado es MAYOR")
@@ -22,6 +23,5 @@ while intentos < 10:
 		print("Bien hecho, haz adivinado el numero que pense!!")
 		print("Haz acertado en "+str(intentos)+" intentos")
 		break;
-	intentos = intentos + 1
 if intentos >= 10:
 	print("Lo siento no haz acertado, el numero que pense era "+str(numero))
