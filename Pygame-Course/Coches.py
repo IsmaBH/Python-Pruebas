@@ -26,6 +26,16 @@ def dibujaCoche(pos_x,pos_y):
 #Funciones para el bloque
 def bloque(bloque_x, bloque_y, bloque_ancho, bloque_alto, color):
 	pygame.draw.rect(canvas,color,(bloque_x,bloque_y, bloque_ancho, bloque_alto))
+#Funcion de colision
+def bloque_choca():
+	if (bloque_inicio_y + bloque_alto > y):
+		if (x+imagen_coche.get_width() > bloque_inicio_x and x < bloque_inicio_x + bloque_ancho):
+			return True
+	return False
+def crash():
+	print("Te has chocado")
+	pygame.quit()
+	sys.exit(0)
 #Inicializacion de las variables de ventana
 pygame.init()
 canvas = pygame.display.set_mode((ANCHO_V,ALTURA_V))
@@ -52,6 +62,9 @@ while not choque:
 	if bloque_inicio_y > ALTURA_V:
 	 	bloque_inicio_y = -bloque_alto
 	 	bloque_inicio_x = random.randint(0,ANCHO_V - bloque_ancho)
+	#Comprobar si se ha chocado
+	if bloque_choca():
+		crash()
 	#Se dibuja el plano de juego
 	canvas.fill(SKY_BLUE)
 	#Aqui se dibuja el bloque
