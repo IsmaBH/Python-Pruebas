@@ -33,9 +33,9 @@ def bloque_choca():
 			return True
 	return False
 def crash():
+	global choque
 	print("Te has chocado")
-	pygame.quit()
-	sys.exit(0)
+	choque = True
 #Inicializacion de las variables de ventana
 pygame.init()
 canvas = pygame.display.set_mode((ANCHO_V,ALTURA_V))
