@@ -9,6 +9,7 @@ ALTURA_V = 600
 running = 1
 BACKGROUND_COLOR = (200,200,200)
 tiempo = pygame.time.Clock()
+text_font = pygame.font.SysFont("Arial",48)
 #Variables para las palas y la pelota
 BALL_RADIUS = 20
 L_POLE_COLOR = (20,51,220)
@@ -22,7 +23,13 @@ LEFT = False
 RIGHT = True
 PADDLE_SPEED = 4
 LINES_COLOR = (0,0,0)
+SCORE_1_POS = (ANCHO_V//2 - 70, 50)
+SCORE_2_POS = (ANCHO_V//2 + 50, 50)
 #Funciones
+def draw_Text(texto, position, color):
+	global canvas
+	superficie = text_font.render(texto, True, color)
+	canvas.blit(superficie, position)
 def new_Game():
 	global pala_1_pos, pala_2_pos, pala_1_incremento_y, pala_2_incremento_y, score_1, score_2
 	pala_1_pos = [0,ALTURA_V//2 - HALF_PAD_HEIGHT]
@@ -31,7 +38,7 @@ def new_Game():
 	pala_2_incremento_y = 0;
 	score_1 = 0
 	score_2 = 0
-	lanza_bola(RIGHT)
+	lanza_bola(random.choice([RIGHT,LEFT]))
 def lanza_bola(direccion):
 	global ball_pos, ball_vel
 	x_dir = random.randint(2,4)
@@ -62,6 +69,9 @@ def draw_Field():
 	pygame.draw.line(canvas, LINES_COLOR, (PAD_WIDTH,0), (PAD_WIDTH,ALTURA_V), 1)
 	#Linea del jugador derecho
 	pygame.draw.line(canvas, LINES_COLOR, ((ANCHO_V-PAD_WIDTH),0), ((ANCHO_V-PAD_WIDTH),ALTURA_V), 1)
+	#Dibujamos los marcadores
+	draw_Text(str(score_1), SCORE_1_POS, L_POLE_COLOR)
+	draw_Text(str(score_2), SCORE_2_POS, R_POLE_COLOR)
 def draw_Poles():
 	#Actualizamos los datos
 	global pala_1_pos, pala_2_pos
@@ -77,21 +87,21 @@ def draw_Ball():
 			score_1 += 1
 			lanza_bola(LEFT)
 		else:
-			ball_vel[0] = -ball_vel[0]
+			ball_vel[0] = -ball_vel[0] * 1.1
 	#Control de la pelota en el limite izquierdo
 	if ball_pos[0] - BALL_RADIUS < PAD_WIDTH:
 			if ball_pos[1] + BALL_RADIUS < pala_1_pos[1] or ball_pos[1] - BALL_RADIUS > pala_1_pos[1] + PAD_HEIGHT:
 					score_2 += 1
 					lanza_bola(RIGHT)
 			else:
-				ball_vel[0] = -ball_vel[0]
+				ball_vel[0] = -ball_vel[0] * 1.1
 	#Se actualizan los datos
 	ball_pos[0] = ball_pos[0] + ball_vel[0]
 	ball_pos[1] = ball_pos[1] +ball_vel[1]
 	#Comprobamos los limites inferior y superior y hacemos el rebote
 	if ball_pos[1] <= BALL_RADIUS or ball_pos[1] >= ALTURA_V-BALL_RADIUS:
 		ball_vel[1] = -ball_vel[1]
-	pygame.draw.circle(canvas, B_COLOR,(ball_pos[0],ball_pos[1]), BALL_RADIUS)
+	pygame.draw.circle(canvas, B_COLOR,(int(ball_pos[0]),int(ball_pos[1])), BALL_RADIUS)
 #Creacion de la ventana
 canvas = pygame.display.set_mode((ANCHO_V,ALTURA_V))
 pygame.display.set_caption("PONG")
