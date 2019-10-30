@@ -8,6 +8,7 @@ HEIGHT = 600
 FPS = 60
 BLACK = (0,0,0)
 GREEN = (20, 248, 20)
+RED = (248,20,20)
 BACKGROUND_COLOR = (200,200,200)
 #Clase Jugador
 class Player(pygame.sprite.Sprite):
@@ -33,6 +34,27 @@ class Player(pygame.sprite.Sprite):
 		if self.rect.left < 0:
 			self.rect.left = 0
 		self.rect.x += self.speedx
+#Clase de los enemigos
+class Mob(pygame.sprite.Sprite):
+	#Metodo init de la clase
+	def __init__(self):
+		super(Mob, self).__init__()
+		self.image = pygame.Surface((30,40))
+		self.image.fill(RED)
+		self.rect = self.image.get_rect()
+		self.rect.x = random.randint(0,WIDTH-self.rect.width)
+		self.rect.y = random.randint(-100,40)
+		self.speedy = random.randrange(1,8)
+		self.speedx = random.randint(-1,1)
+	#Metodos de la clase
+	def update(self):
+		self.rect.y += self.speedy
+		self.rect.x += self.speedx
+		if self.rect.top > HEIGHT+10:
+			self.rect.x = random.randint(0,WIDTH-self.rect.width)
+			self.rect.y = random.randint(-100,40)
+			self.speedy = random.randrange(1,8)
+			self.speedx = random.randint(-1,1)
 #Inicializacion de pygame
 pygame.init()
 pygame.mixer.init()
@@ -41,8 +63,13 @@ pygame.display.set_caption("Invasion Espacial")
 clock = pygame.time.Clock()
 #Grupo de Sprites
 all_sprites = pygame.sprite.Group()
+mobs = pygame.sprite.Group()
 player = Player()
 all_sprites.add(player)
+for i in range(8):
+	m = Mob()
+	all_sprites.add(m)
+	mobs.add(m)
 #Bucle de Juego
 running = True
 while running:
