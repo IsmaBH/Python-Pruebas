@@ -2,6 +2,9 @@
 #Sprite graphics: Copyright 2016 David Thompson <davet@gnu.org>
 #Background image artwork from game "Gagian" by Alksander Kowalczyk, Retrocade.net
 #Licensed under: Attribution 4.0 Internacional (CC BY 4.0) https://creativecommons.org/licenses/by/4.0/
+#www.bfxr.net for sounds
+#Background music by SketchyLogic
+#Licensed under: Attribution completely optional CC0 1.0 Universal (CC0 1.0)
 import pygame, sys
 import random
 import os
@@ -12,6 +15,7 @@ FPS = 60
 BLACK = (0,0,0)
 RED = (200,20,20)
 WHITE = (248,248,248)
+GREEN = (20,220,20)
 BACKGROUND_COLOR = (200,200,200)
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'assets')
 #Funciones del juego
@@ -24,6 +28,21 @@ def draw_score(surf,text,size,pos):
 	text_shadow_pos = [text_rect.x+2,text_rect.y+2]
 	surf.blit(text_shadow, text_shadow_pos)
 	surf.blit(text_surface, text_rect)
+def new_mob():
+	m = Mob()
+	all_sprites.add(m)
+	mobs.add(m)
+def draw_health_bar(surf,x,y,valor):
+	if valor < 0:
+		valor = 0
+	BAR_LENGHT = 100
+	BAR_HEIGHT = 10
+	fill = (valor/100)*BAR_LENGHT
+	fill_rect = pygame.Rect(x,y,fill,BAR_HEIGHT)
+	outer_rect = pygame.Rect(x,y,BAR_LENGHT,BAR_HEIGHT)
+	pygame.draw.rect(surf,RED,outer_rect)
+	pygame.draw.rect(surf,GREEN,fill_rect)
+	pygame.draw.rect(surf,WHITE,outer_rect,2)
 #Clase Jugador
 class Player(pygame.sprite.Sprite):
 	#Metodo init de la clase
@@ -36,6 +55,7 @@ class Player(pygame.sprite.Sprite):
 		self.rect.centerx = WIDTH//2
 		self.rect.bottom = HEIGHT-10
 		self.speedx = 0
+		self.health = 100
 	#Metodos de la clase
 	def update(self):
 		self.speedx = 0
@@ -50,6 +70,7 @@ class Player(pygame.sprite.Sprite):
 			self.rect.left = 0
 		self.rect.x += self.speedx
 	def shoot(self):
+		snd_shoot.play()
 		bullet = Bullet(self.rect.centerx,self.rect.top)
 		all_sprites.add(bullet)
 		bullets.add(bullet)
@@ -86,7 +107,31 @@ class Bullet(pygame.sprite.Sprite):
 		self.speedy = -10
 	def update(self):
 		self.rect.y += self.speedy
+class Explosion(pygame.sprite.Sprite):
+	#Metodo init de la clase
+	def __init__(self, center, size):
+		super(Explosion, self).__init__()
+		self.size = size
+		self.image = explosion_anim[self.size][0]
+		self.rect = self.image.get_rect()
+		self.rect.center = center
+		self.frame = 0
+		self.last_update = pygame.time.get_ticks()
+		self.frame_delay = 50 #Son milisegundos
+	def update(self):
+		now = pygame.time.get_ticks()
+		if now - self.last_update > self.frame_delay:
+			self.last_update = now
+			self.frame += 1
+			if self.frame == len(explosion_anim[self.size]):
+				self.kill()
+			else:
+				center = self.rect.center
+				self.image = explosion_anim[self.size][self.frame]
+				self.rect = self.image.get_rect()
+				self.rect.center = center
 #Inicializacion de pygame
+pygame.mixer.pre_init(44100,-16,2,512)
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -101,6 +146,27 @@ enemy_images = []
 for img_file in enemy_files:
 	enemy_images.append(pygame.image.load(os.path.join(ASSETS_DIR,img_file)).convert_alpha())
 bullet_img = pygame.image.load(os.path.join(ASSETS_DIR,"bullet.png")).convert_alpha()
+#Carga de imagenes para las explosiones
+explosion_anim = {}
+explosion_anim['big'] = []
+explosion_anim['small'] = []
+for i in range(3):
+	filename = 'explosion'+str(i)+'.png'
+	img = pygame.image.load(os.path.join(ASSETS_DIR,filename)).convert_alpha()
+	img_big = pygame.transform.scale(img,(32,32))
+	explosion_anim['big'].append(img_big)
+	explosion_anim['small'].append(img)
+#Carga de Sonidos
+snd_shoot = pygame.mixer.Sound(os.path.join(ASSETS_DIR,'Laser_Shoot.wav'))
+snd_shoot.set_volume(0.05)
+snd_explosions = []
+snd_files = ["Explosion.wav","Explosion2.wav","Explosion3.wav"]
+for snd_file in snd_files:
+	snd = pygame.mixer.Sound(os.path.join(ASSETS_DIR,snd_file))
+	snd.set_volume(0.04)
+	snd_explosions.append(snd)
+pygame.mixer.music.load(os.path.join(ASSETS_DIR,"Venus.wav"))
+pygame.mixer.music.set_volume(0.1)
 #Grupo de Sprites
 all_sprites = pygame.sprite.Group()
 mobs = pygame.sprite.Group()
@@ -108,13 +174,13 @@ bullets = pygame.sprite.Group()
 player = Player()
 all_sprites.add(player)
 for i in range(8):
-	m = Mob()
-	all_sprites.add(m)
-	mobs.add(m)
+	new_mob()
 #Variable de puntuacion
 score = 0
 #Fuente para la puntuacion
 font_name = pygame.font.match_font('arial')
+#Play background music forever
+pygame.mixer.music.play(loops = -1)
 #Bucle de Juego
 running = True
 while running:
@@ -131,21 +197,29 @@ while running:
 	#Update
 	all_sprites.update()
 	#Comprobacion de colisiones con los mob
-	hits = pygame.sprite.spritecollide(player,mobs,False, pygame.sprite.collide_circle)
-	if hits:
-		running = False
+	hits = pygame.sprite.spritecollide(player,mobs,True, pygame.sprite.collide_circle)
+	for hit in hits:
+		snd_explosions[0].play()
+		expl = Explosion(hit.rect.center,'small')
+		all_sprites.add(expl)
+		player.health -= 25
+		new_mob()
+		if player.health <= 0:
+			running = False
 	#Comprobacion de colision de un bullet con mob
 	hits = pygame.sprite.groupcollide(mobs,bullets,True, True)
 	for hit in hits:
+		random.choice(snd_explosions).play()
+		expl = Explosion(hit.rect.center,'big')
+		all_sprites.add(expl)
 		score += 25
-		m = Mob()
-		all_sprites.add(m)
-		mobs.add(m)
+		new_mob()
 	#Dibujar o bien renderizar los objetos
 	screen.fill(BLACK)
 	screen.blit(background, background_rect)
 	all_sprites.draw(screen)
 	draw_score(screen,str(score), 18, (WIDTH//2,10))
+	draw_health_bar(screen,5,5,player.health)
 	#Despues de dibujar todo mostrar en pantalla
 	pygame.display.flip()
 #Fin del juego
