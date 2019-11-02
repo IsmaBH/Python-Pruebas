@@ -43,6 +43,12 @@ def draw_health_bar(surf,x,y,valor):
 	pygame.draw.rect(surf,RED,outer_rect)
 	pygame.draw.rect(surf,GREEN,fill_rect)
 	pygame.draw.rect(surf,WHITE,outer_rect,2)
+def draw_lives(surf,x,y,n_lives,img):
+	for i in range(n_lives):
+		img_rect = img.get_rect()
+		img_rect.x = x+20*i
+		img_rect.y = y
+		surf.blit(img,img_rect)
 #Clase Jugador
 class Player(pygame.sprite.Sprite):
 	#Metodo init de la clase
@@ -56,8 +62,15 @@ class Player(pygame.sprite.Sprite):
 		self.rect.bottom = HEIGHT-10
 		self.speedx = 0
 		self.health = 100
+		self.lives = 3
+		self.hidden = False
+		self.hide_timer = pygame.time.get_ticks()
 	#Metodos de la clase
 	def update(self):
+		if self.hidden and pygame.time.get_ticks() - self.hide_timer > 2000:
+			self.hidden = False
+			self.rect.centerx = WIDTH//2
+			self.rect.bottom = HEIGHT -10
 		self.speedx = 0
 		keystate = pygame.key.get_pressed()
 		if keystate[pygame.K_LEFT]:
@@ -74,6 +87,10 @@ class Player(pygame.sprite.Sprite):
 		bullet = Bullet(self.rect.centerx,self.rect.top)
 		all_sprites.add(bullet)
 		bullets.add(bullet)
+	def hide(self):
+		self.hidden = True
+		self.hide_timer = pygame.time.get_ticks()
+		self.rect.y = HEIGHT +200
 #Clase de los enemigos
 class Mob(pygame.sprite.Sprite):
 	#Metodo init de la clase
@@ -87,6 +104,8 @@ class Mob(pygame.sprite.Sprite):
 		self.rect.y = random.randint(-100,-40)
 		self.speedy = random.randrange(1,8)
 		self.speedx = random.randint(-1,1)
+		self.last_shot = pygame.time.get_ticks()
+		self.shot_delay = random.randint(2000,4000)
 	#Metodos de la clase
 	def update(self):
 		self.rect.y += self.speedy
@@ -96,6 +115,14 @@ class Mob(pygame.sprite.Sprite):
 			self.rect.y = random.randint(-100,-40)
 			self.speedy = random.randrange(1,8)
 			self.speedx = random.randint(-1,1)
+		now = pygame.time.get_ticks()
+		if now - self.last_shot > self.shot_delay:
+			self.shoot()
+	def shoot(self):
+		self.last_shot = pygame.time.get_ticks()
+		bullet = EnemyBullet(self.rect.centerx,self.rect.bottom)
+		all_sprites.add(bullet)
+		enemy_bullets.add(bullet)
 class Bullet(pygame.sprite.Sprite):
 	#Metodo init de la clase
 	def __init__(self, x , y):
@@ -130,6 +157,18 @@ class Explosion(pygame.sprite.Sprite):
 				self.image = explosion_anim[self.size][self.frame]
 				self.rect = self.image.get_rect()
 				self.rect.center = center
+class EnemyBullet(pygame.sprite.Sprite):
+	#Metodo init de la clase
+	def __init__(self,x,y):
+		super(EnemyBullet, self).__init__()
+		self.image = enemy_bullet_img
+		self.rect = self.image.get_rect()
+		self.radius = int(self.rect.width * 0.3)
+		self.rect.top = y
+		self.rect.centerx = x
+		self.speedy = 5
+	def update(self):
+		self.rect.y += self.speedy
 #Inicializacion de pygame
 pygame.mixer.pre_init(44100,-16,2,512)
 pygame.init()
@@ -141,11 +180,13 @@ clock = pygame.time.Clock()
 background = pygame.image.load(os.path.join(ASSETS_DIR, "starfield.png")).convert_alpha()
 background_rect = background.get_rect()
 player_img = pygame.image.load(os.path.join(ASSETS_DIR,"player.png")).convert_alpha()
+player_mini_img = pygame.transform.scale(player_img,(16,16))
 enemy_files = ['enemy1.png','enemy2.png','enemy3.png']
 enemy_images = []
 for img_file in enemy_files:
 	enemy_images.append(pygame.image.load(os.path.join(ASSETS_DIR,img_file)).convert_alpha())
 bullet_img = pygame.image.load(os.path.join(ASSETS_DIR,"bullet.png")).convert_alpha()
+enemy_bullet_img = pygame.image.load(os.path.join(ASSETS_DIR,"enemy_bullet.png")).convert_alpha()
 #Carga de imagenes para las explosiones
 explosion_anim = {}
 explosion_anim['big'] = []
@@ -156,6 +197,9 @@ for i in range(3):
 	img_big = pygame.transform.scale(img,(32,32))
 	explosion_anim['big'].append(img_big)
 	explosion_anim['small'].append(img)
+explosion_anim['player'] = explosion_anim['big'][0:3]
+explosion_anim['player'].append(explosion_anim['big'][1])
+explosion_anim['player'].append(explosion_anim['big'][0])
 #Carga de Sonidos
 snd_shoot = pygame.mixer.Sound(os.path.join(ASSETS_DIR,'Laser_Shoot.wav'))
 snd_shoot.set_volume(0.05)
@@ -165,12 +209,15 @@ for snd_file in snd_files:
 	snd = pygame.mixer.Sound(os.path.join(ASSETS_DIR,snd_file))
 	snd.set_volume(0.04)
 	snd_explosions.append(snd)
+snd_player_explosion = pygame.mixer.Sound(os.path.join(ASSETS_DIR,"explosion_player.wav"))
+snd_player_explosion.set_volume(0.1)
 pygame.mixer.music.load(os.path.join(ASSETS_DIR,"Venus.wav"))
 pygame.mixer.music.set_volume(0.1)
 #Grupo de Sprites
 all_sprites = pygame.sprite.Group()
 mobs = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
+enemy_bullets = pygame.sprite.Group()
 player = Player()
 all_sprites.add(player)
 for i in range(8):
@@ -205,7 +252,12 @@ while running:
 		player.health -= 25
 		new_mob()
 		if player.health <= 0:
-			running = False
+			snd_player_explosion.play()
+			death_explosion = Explosion(player.rect.center,'player')
+			all_sprites.add(death_explosion)
+			player.lives -= 1
+			player.health = 100
+			player.hide()
 	#Comprobacion de colision de un bullet con mob
 	hits = pygame.sprite.groupcollide(mobs,bullets,True, True)
 	for hit in hits:
@@ -214,12 +266,28 @@ while running:
 		all_sprites.add(expl)
 		score += 25
 		new_mob()
+	#Comprobacion de colison de un bullet con el player
+	hits = pygame.sprite.spritecollide(player,enemy_bullets,True,pygame.sprite.collide_circle)
+	for hit in hits:
+		expl = Explosion(hit.rect.center,'small')
+		all_sprites.add(expl)
+		player.health -= 15
+		if player.health <= 0:
+			snd_player_explosion.play()
+			death_explosion = Explosion(player.rect.center,'player')
+			all_sprites.add(death_explosion)
+			player.lives -= 1
+			player.health = 100
+			player.hide()
+	if player.lives == 0 and death_explosion.alive():
+		running = False
 	#Dibujar o bien renderizar los objetos
 	screen.fill(BLACK)
 	screen.blit(background, background_rect)
 	all_sprites.draw(screen)
 	draw_score(screen,str(score), 18, (WIDTH//2,10))
 	draw_health_bar(screen,5,5,player.health)
+	draw_lives(screen,WIDTH - 54,10,player.lives,player_mini_img)
 	#Despues de dibujar todo mostrar en pantalla
 	pygame.display.flip()
 #Fin del juego
