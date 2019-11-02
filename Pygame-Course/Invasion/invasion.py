@@ -18,6 +18,12 @@ ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'assets')
 def draw_score(surf,text,size,pos):
 	font = pygame.font.Font(font_name,size)
 	text_surface = font.render(text,True,WHITE)
+	text_shadow = font.render(text, True, RED)
+	text_rect = text_surface.get_rect()
+	text_rect.midtop = pos
+	text_shadow_pos = [text_rect.x+2,text_rect.y+2]
+	surf.blit(text_shadow, text_shadow_pos)
+	surf.blit(text_surface, text_rect)
 #Clase Jugador
 class Player(pygame.sprite.Sprite):
 	#Metodo init de la clase
@@ -108,7 +114,7 @@ for i in range(8):
 #Variable de puntuacion
 score = 0
 #Fuente para la puntuacion
-font_name = pygame.font.match.font('arial')
+font_name = pygame.font.match_font('arial')
 #Bucle de Juego
 running = True
 while running:
@@ -139,6 +145,7 @@ while running:
 	screen.fill(BLACK)
 	screen.blit(background, background_rect)
 	all_sprites.draw(screen)
+	draw_score(screen,str(score), 18, (WIDTH//2,10))
 	#Despues de dibujar todo mostrar en pantalla
 	pygame.display.flip()
 #Fin del juego
