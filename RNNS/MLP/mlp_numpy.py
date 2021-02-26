@@ -18,7 +18,7 @@ def init_network(v1):
 
 def activate(weights,bias,inputs):
     #Function that makes the activation operation
-    activation = np.add(np.dot(weights,inputs),bias)
+    activation = np.dot(weights,inputs) + bias
     return activation
 
 def transfer(opc,activation):
@@ -32,27 +32,22 @@ def transfer(opc,activation):
     else:
         return (np.exp(activation) - np.exp(-activation))/(np.exp(activation) + np.exp(-activation))
 
-def forward_propagate(network,row,v2):
+def forward_propagate(network,v2,row):
     #Function that makes de propagation of the data
     inputs = row
-    for i in range(len(network[0]['weights'])):
-        new_inputs = ()
-        activation = activate(network[0]['weights'][i],network[1]['bias'][i],inputs)
+    for i in range(len(network['weights'])):
+        new_inputs = []
+        activation = activate(network['weights'][i],network['bias'][i],inputs)
         output = transfer(v2[i],activation)
         new_inputs.append(output)
-        inputs = new_inputs[i]
-    network['outputs'] = new_inputs
+        inputs = new_inputs[0]
+    network['output'] = output
     return network
 
-def transfer_derivative(opc,output):
+def transfer_derivative(v1,v2,output):
     #Function that set the derivates for the given functio
     #See transfer function for the meaning of the options
-    if opc == 1:
-        return 1
-    elif opc == 2:
-        return np.dot(output,(1.0-output))
-    else:
-        return 1.0 - (transfer(3,output))**2
+    pass
 
 def backpropagate_error(network,expected):
     #Function that implements the backprpagation
@@ -60,5 +55,9 @@ def backpropagate_error(network,expected):
 #Test seccion
 v1 = [int (x) for x in input().split()]
 v2 = [int (y) for y in input().split()]
+dataset = np.random.randint(1,10,(4,1))
+#dataset = np.array([1,2,4,5])
+#dataset.shape = (4,1)
 network = init_network(v1)
+network = forward_propagate(network,v2,dataset)
 print(network)
