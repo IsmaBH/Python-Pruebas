@@ -35,22 +35,60 @@ def transfer(opc,activation):
 def forward_propagate(network,v2,row):
     #Function that makes de propagation of the data
     inputs = row
+    new_inputs = []
     for i in range(len(network['weights'])):
-        new_inputs = []
         activation = activate(network['weights'][i],network['bias'][i],inputs)
         output = transfer(v2[i],activation)
         new_inputs.append(output)
-        inputs = new_inputs[0]
-    network['output'] = output
+        inputs = new_inputs[i]
+    network['outputs'] = new_inputs
     return network
 
-def transfer_derivative(v1,v2,output):
-    #Function that set the derivates for the given functio
+def transfer_derivative(opc,output):
+    #Function that set the derivates for the networok
     #See transfer function for the meaning of the options
-    pass
+    if opc == 1:
+        x,y = output.shape
+        output.shape = (y,x)
+        purelin = np.diag(output[0])
+        return purelin
+    elif opc == 2:
+        x,y = output.shape
+        output.shape = (y,x)
+        aux = output[0]*(1.0 - output[0])
+        sigmoid = diag(aux)
+        return sigmoid
+    else:
+        x,y = output.shape
+        output.shape = (y,x)
+        aux = 1-(transfer(output[0])**2)
+        tansig = np.diag(aux)
+        return tansig
 
-def backpropagate_error(network,expected):
-    #Function that implements the backprpagation
+def backpropagate_error(network,expected,v2):
+    #Function that implements the backprpagation of the error
+    #to get the sensitivities of the network
+    sensitivities = list()
+    count = 0
+    for i in reversed(range(len(network[2]))):
+        if i == len(network[2]):
+            derivate = transfer_derivative(v2[i],network[2][i])
+            error = expected - network[2][i]
+            sens = ((-2)*derivate)*error
+            sensitivities.append(sens)
+        else:
+            for j in range(len(network[2])):
+                derivate = transfer_derivative(v2[i],network[2][i])
+                sens = (derivate*np.transpose(network[0][i]))*sensitivities[j+count]
+                sensitivities.append(sens)
+                count += 1
+                break
+    network['sens'] = sensitivities
+    return network
+
+def learning_rule(network,l_rate):
+    #This function updates the weights and biases according to
+    #the sensitivities got in the backpropagate function
     pass
 #Test seccion
 v1 = [int (x) for x in input().split()]
