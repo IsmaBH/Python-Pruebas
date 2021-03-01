@@ -108,12 +108,15 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round):
     #This function starts the training of the network for
     #a given number of epoch and return the ideal values for 
     #the weights and biases
+    val_index = 0
+    t_index = 0
     for epoch in range(n_epoch):
         if (epoch % validation_round) == 0:
-           val_network = forward_propagate(network,v2,dataset['val_inputs'][])
-           errors = dataset['val_outputs'] - val_network['outputs']
+           val_network = forward_propagate(network,v2,dataset['val_inputs'][val_index])
+           errors = dataset['val_outputs'][val_index] - val_network['outputs']
            x,y = errors.shape
            epoch_error = errors.sum()/x
+           val_index += 1
            if epoch_error > prev_error:
                early_stop += 1
                prev_error = epoch_error
@@ -123,27 +126,77 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round):
            else:
                early_stop = 0
         else:
-            network = forward_propagate(network,v2,dataset['train_inputs'][])
-            network = backpropagate_error(network,dataset['train_outputs'][])
+            network = forward_propagate(network,v2,dataset['train_inputs'][t_index])
+            network = backpropagate_error(network,dataset['train_outputs'][t_index])
             network = learning_rule(network,l_rate)
+            t_index += 1
     return network
 
-def get_dataset(filename1,filename2,filename3,filename4,filename5,filename6):
+def get_dataset(filename1,filename2,filename3,filename4):
     #This function takes the name of 6 files related with
     #the dataset (train,validation,test) and save them in a 
     #dictionary with format: train_inputs,train_outputs
     #                        validation_inputs,validation_outputs
-    #                        test_inputs, test_outputs
-    pass
+    dataset = {}
+    t_inputs = list()
+    t_outputs = list()
+    v_inputs = list()
+    v_outputs = list()
+    archivo1 = open(filename1,'r')
+    while True:
+        linea = archivo1.readline()
+        if not linea:
+            break
+        t_input = np.fromstring(linea,dtype=int,sep=',')
+        t_inputs.append(t_input)
+    archivo1.close()
+    dataset['train_inputs'] = t_inputs
+    archivo2 = open(filename2,'r')
+    while True:
+        linea = archivo2.readline()
+        if not linea:
+            break
+        t_out = np.fromstring(linea,dtype=int,sep=',')
+        t_outputs.append(t_out)
+    archivo2.close()
+    dataset['train_outputs'] = t_outputs
+    archivo3 = open(filename3,'r')
+    while True:
+        linea = archivo3.readline()
+        if not linea:
+            break
+        v_input = np.fromstring(linea,dtype=int,sep=',')
+        v_inputs.append(v_input)
+    archivo3.close()
+    dataset['validation_inputs'] = v_inputs
+    archivo4 = open(filename4,'r')
+    while True:
+        linea = archivo.readline()
+        if not linea:
+            break
+        v_out = np.fromstring(linea,dtype=int,sep=',')
+        v_outputs.append(v_out)
+    archivo4.close()
+    dataset['validation_outputs'] = v_outputs
 
 def set_network(opc,network):
     #This function sets the weights and bias from a file or
     #writes the weights and bias of a network in a file
-    pass
+    if opc == 1:
+        #If opc is one then we load the weights and bias from a file
+        network['weights'] = np.loadtxt('weights.txt')
+        network['bias'] = np.loadtxt('biases.txt')
+    else:
+        #If opc is another number then we save the weights and biases
+        #of the given network in a file
+        np.savetxt('weights.txt',network['weights'])
+        np.savetxt('biases.txt',network['bias'])
+
+
 #Test seccion
 v1 = [int (x) for x in input().split()]
 v2 = [int (y) for y in input().split()]
-dataset = np.random.randint(1,10,(4,1))
+dataset = get_dataset('inputs_t.txt','outputs_t.txt','inputs_v.txt','outputs_v.txt')
 #dataset = np.array([1,2,4,5])
 #dataset.shape = (4,1)
 network = init_network(v1)
