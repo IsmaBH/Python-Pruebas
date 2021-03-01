@@ -50,18 +50,18 @@ def transfer_derivative(opc,output):
     if opc == 1:
         x,y = output.shape
         output.shape = (y,x)
-        purelin = np.diag(output[0])
+        purelin = np.diag(output)
         return purelin
     elif opc == 2:
         x,y = output.shape
         output.shape = (y,x)
-        aux = output[0]*(1.0 - output[0])
+        aux = output[0]*(1.0 - output)
         sigmoid = diag(aux)
         return sigmoid
     else:
         x,y = output.shape
         output.shape = (y,x)
-        aux = 1-(transfer(output[0])**2)
+        aux = 1-(transfer(output)**2)
         tansig = np.diag(aux)
         return tansig
 
@@ -70,16 +70,16 @@ def backpropagate_error(network,expected,v2):
     #to get the sensitivities of the network
     sensitivities = list()
     count = 0
-    for i in reversed(range(len(network[2]))):
-        if i == len(network[2]):
-            derivate = transfer_derivative(v2[i],network[2][i])
-            error = expected - network[2][i]
+    for i in reversed(range(len(network['outputs']))):
+        if i == len(network['outputs']):
+            derivate = transfer_derivative(v2[i],network['outputs'][i])
+            error = expected - network['outputs'][i]
             sens = ((-2)*derivate)*error
             sensitivities.append(sens)
         else:
-            for j in range(len(network[2])):
-                derivate = transfer_derivative(v2[i],network[2][i])
-                sens = (derivate*np.transpose(network[0][i]))*sensitivities[j+count]
+            for j in range(len(network['outputs'])):
+                derivate = transfer_derivative(v2[i],network['outputs'][i])
+                sens = (derivate*np.transpose(network['weights'][i]))*sensitivities[j+count]
                 sensitivities.append(sens)
                 count += 1
                 break
@@ -89,6 +89,56 @@ def backpropagate_error(network,expected,v2):
 def learning_rule(network,l_rate):
     #This function updates the weights and biases according to
     #the sensitivities got in the backpropagate function
+    new_weights = list()
+    new_bias = list()
+    for i in range(len(network['weights'])):
+        aux1 = l_rate*network['sens'][i]
+        aux2 = aux1*np.transpose(network['outputs'][i])
+        new_weight = network['weights'][i] - aux2
+        new_weights.append(new_weight)
+    for j in range(len(network['bias'])):
+        aux = l_rate*network['sens'][i]
+        new_b = network['bias'][j] - aux
+        new_bias.append(new_b)
+    network['weights'] = new_weights
+    network['bias'] = new_bias
+    return network
+
+def train_network(network,dataset,l_rate,n_epoch,validation_round):
+    #This function starts the training of the network for
+    #a given number of epoch and return the ideal values for 
+    #the weights and biases
+    for epoch in range(n_epoch):
+        if (epoch % validation_round) == 0:
+           val_network = forward_propagate(network,v2,dataset['val_inputs'][])
+           errors = dataset['val_outputs'] - val_network['outputs']
+           x,y = errors.shape
+           epoch_error = errors.sum()/x
+           if epoch_error > prev_error:
+               early_stop += 1
+               prev_error = epoch_error
+               if early_stop > 3:
+                   print("Choose another arch")
+                   break
+           else:
+               early_stop = 0
+        else:
+            network = forward_propagate(network,v2,dataset['train_inputs'][])
+            network = backpropagate_error(network,dataset['train_outputs'][])
+            network = learning_rule(network,l_rate)
+    return network
+
+def get_dataset(filename1,filename2,filename3,filename4,filename5,filename6):
+    #This function takes the name of 6 files related with
+    #the dataset (train,validation,test) and save them in a 
+    #dictionary with format: train_inputs,train_outputs
+    #                        validation_inputs,validation_outputs
+    #                        test_inputs, test_outputs
+    pass
+
+def set_network(opc,network):
+    #This function sets the weights and bias from a file or
+    #writes the weights and bias of a network in a file
     pass
 #Test seccion
 v1 = [int (x) for x in input().split()]
