@@ -132,52 +132,12 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round):
             t_index += 1
     return network
 
-def get_dataset(filename1,filename2,filename3,filename4):
-    #This function takes the name of 6 files related with
-    #the dataset (train,validation,test) and save them in a 
-    #dictionary with format: train_inputs,train_outputs
-    #                        validation_inputs,validation_outputs
+def get_dataset(filename):
+    #This function takes the name of a file and charge it into a numpy array
+    #then divide it in three segments (train,validate,test) in my case the file will be a .csv
     dataset = {}
-    t_inputs = list()
-    t_outputs = list()
-    v_inputs = list()
-    v_outputs = list()
-    archivo1 = open(filename1,'r')
-    while True:
-        linea = archivo1.readline()
-        if not linea:
-            break
-        t_input = np.fromstring(linea,dtype=int,sep=',')
-        t_inputs.append(t_input)
-    archivo1.close()
-    dataset['train_inputs'] = t_inputs
-    archivo2 = open(filename2,'r')
-    while True:
-        linea = archivo2.readline()
-        if not linea:
-            break
-        t_out = np.fromstring(linea,dtype=int,sep=',')
-        t_outputs.append(t_out)
-    archivo2.close()
-    dataset['train_outputs'] = t_outputs
-    archivo3 = open(filename3,'r')
-    while True:
-        linea = archivo3.readline()
-        if not linea:
-            break
-        v_input = np.fromstring(linea,dtype=int,sep=',')
-        v_inputs.append(v_input)
-    archivo3.close()
-    dataset['validation_inputs'] = v_inputs
-    archivo4 = open(filename4,'r')
-    while True:
-        linea = archivo.readline()
-        if not linea:
-            break
-        v_out = np.fromstring(linea,dtype=int,sep=',')
-        v_outputs.append(v_out)
-    archivo4.close()
-    dataset['validation_outputs'] = v_outputs
+    raw_dataset = np.loadtxt(filename,dtype=np.int8,delimiter=',',skiprows=0)
+    n_data = len(raw_dataset)
 
 def set_network(opc,network):
     #This function sets the weights and bias from a file or
@@ -196,7 +156,8 @@ def set_network(opc,network):
 #Test seccion
 v1 = [int (x) for x in input().split()]
 v2 = [int (y) for y in input().split()]
-dataset = get_dataset('inputs_t.txt','outputs_t.txt','inputs_v.txt','outputs_v.txt')
+filename = input()
+dataset = get_dataset(filename)
 #dataset = np.array([1,2,4,5])
 #dataset.shape = (4,1)
 network = init_network(v1)
