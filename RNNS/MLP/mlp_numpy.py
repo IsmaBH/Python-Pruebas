@@ -110,6 +110,7 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round):
     #the weights and biases
     val_index = 0
     t_index = 0
+    early_stop = 0
     for epoch in range(n_epoch):
         if (epoch % validation_round) == 0:
            val_network = forward_propagate(network,v2,dataset['val_inputs'][val_index])
@@ -136,8 +137,17 @@ def get_dataset(filename):
     #This function takes the name of a file and charge it into a numpy array
     #then divide it in three segments (train,validate,test) in my case the file will be a .csv
     dataset = {}
+    indices = list()
     raw_dataset = np.loadtxt(filename,dtype=np.int8,delimiter=',',skiprows=0)
     n_data = len(raw_dataset)
+    n_train = round(n_data*0.8)
+    n_val = round(n_data*0.1)
+    n_test = round(n_data*0.1)
+    q1 = n_data/n_train
+    for i in range(n_train):
+        indices.append(round(q1*i))
+    #######
+    return raw_dataset,indices
 
 def set_network(opc,network):
     #This function sets the weights and bias from a file or
@@ -157,9 +167,10 @@ def set_network(opc,network):
 v1 = [int (x) for x in input().split()]
 v2 = [int (y) for y in input().split()]
 filename = input()
-dataset = get_dataset(filename)
+dataset,indices = get_dataset(filename)
 #dataset = np.array([1,2,4,5])
 #dataset.shape = (4,1)
-network = init_network(v1)
-network = forward_propagate(network,v2,dataset)
-print(network)
+print(dataset)
+print("indices de entranamiento")
+print(indices)
+print(len(indices))
