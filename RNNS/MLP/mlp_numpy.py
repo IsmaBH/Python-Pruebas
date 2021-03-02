@@ -133,21 +133,34 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round):
             t_index += 1
     return network
 
-def get_dataset(filename):
-    #This function takes the name of a file and charge it into a numpy array
-    #then divide it in three segments (train,validate,test) in my case the file will be a .csv
+def get_dataset(filename1,filename2,filename3):
+    #This function takes the name of 3 files and charge it into 3 numpy array
+    #then divide it in three segments (train,validate,testi)
+    #PD: The way to get the dataset will change according to the problem, for my particular exercise this was the best way I found but this function needs to change once the problem change.
     dataset = {}
-    indices = list()
-    raw_dataset = np.loadtxt(filename,dtype=np.int8,delimiter=',',skiprows=0)
-    n_data = len(raw_dataset)
-    n_train = round(n_data*0.8)
-    n_val = round(n_data*0.1)
-    n_test = round(n_data*0.1)
-    q1 = n_data/n_train
-    for i in range(n_train):
-        indices.append(round(q1*i))
-    #######
-    return raw_dataset,indices
+    inputs_train = list()
+    outputs_train = list()
+    inputs_val = list()
+    outputs_val = list()
+    inputs_test = list()
+    outputs_test = list()
+    train_dataset = np.loadtxt(filename1,dtype=np.int8,delimiter=',',skiprows=0)
+    validation_dataset = np.loadtxt(filename2,dtype=np.int8,delimiter=',',skiprows=0)
+    test_dataset = np.loadtxt(filename3,dtype=np.int8,delimiter=',',skiprows=0)
+    for i in range(len(train_dataset)-1):
+        outputs_train.append(train_dataset[i])
+        inputs_train.append(train_dataset[i+1])
+        outputs_val.append(validation_dataset[i])
+        inputs_val.append(validation_dataset[i+1])
+        outputs_test.append(test_dataset[i])
+        inputs_test.append(test_dataset[i+1])
+    dataset['train_inputs'] = inputs_train
+    dataset['train_outputs'] = outputs_train
+    dataset['val_inputs'] = inputs_val
+    dataset['val_outputs'] = outputs_val
+    dataset['test_inputs'] = inputs_test
+    dataset['test_outputs'] = outputs_test
+    return dataset
 
 def set_network(opc,network):
     #This function sets the weights and bias from a file or
@@ -159,18 +172,14 @@ def set_network(opc,network):
     else:
         #If opc is another number then we save the weights and biases
         #of the given network in a file
-        np.savetxt('weights.txt',network['weights'])
-        np.savetxt('biases.txt',network['bias'])
+        np.savetxt('weights.txt',network['weights'],delimiter=",")
+        np.savetxt('biases.txt',network['bias'],delimiter=",")
 
 
 #Test seccion
 v1 = [int (x) for x in input().split()]
 v2 = [int (y) for y in input().split()]
-filename = input()
-dataset,indices = get_dataset(filename)
+filename = [ str (z) for z in  input().split()]
+dataset = get_dataset(filename[0],filename[1],filename[2])
 #dataset = np.array([1,2,4,5])
 #dataset.shape = (4,1)
-print(dataset)
-print("indices de entranamiento")
-print(indices)
-print(len(indices))
