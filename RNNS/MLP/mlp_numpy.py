@@ -105,7 +105,7 @@ def learning_rule(network,l_rate):
     network['bias'] = new_bias
     return network
 
-def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error):
+def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error,v2):
     #This function starts the training of the network for
     #a given number of epoch and return the ideal values for 
     #the weights and biases
@@ -136,7 +136,7 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             iter_errors = []
             for i in range(n_dataset):
                 network = forward_propagate(network,v2,dataset['train_inputs'][i])
-                network = backpropagate_error(network,dataset['train_outputs'][t_index])
+                network = backpropagate_error(network,dataset['train_outputs'][i],v2)
                 network = learning_rule(network,l_rate)
                 errors = dataset['train_inputs'][i] - network['outputs']
                 x,y = errors.shape
