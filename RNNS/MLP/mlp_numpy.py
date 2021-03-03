@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 def init_network(v1):
     #Function that initialize the network parameters
@@ -150,8 +151,10 @@ def get_dataset(filename1,filename2,filename3):
     for i in range(len(train_dataset)-1):
         outputs_train.append(train_dataset[i])
         inputs_train.append(train_dataset[i+1])
+    for i in range(len(validation_dataset)-1):
         outputs_val.append(validation_dataset[i])
         inputs_val.append(validation_dataset[i+1])
+    for i in range(len(test_dataset)-1):
         outputs_test.append(test_dataset[i])
         inputs_test.append(test_dataset[i+1])
     dataset['train_inputs'] = inputs_train
@@ -167,19 +170,42 @@ def set_network(opc,network):
     #writes the weights and bias of a network in a file
     if opc == 1:
         #If opc is one then we load the weights and bias from a file
-        network['weights'] = np.loadtxt('weights.txt')
-        network['bias'] = np.loadtxt('biases.txt')
+        layers = len(network['weights'])
+        for i in range(layers):
+            s1 = "weights{}.txt"
+            s2 = "bias{}.txt"
+            network['weights'][i] = np.loadtxt(s1.format(i))
+            network['bias'][i] = np.loadtxt(s2.format(i))
+        return network
     else:
         #If opc is another number then we save the weights and biases
         #of the given network in a file
-        np.savetxt('weights.txt',network['weights'],delimiter=",")
-        np.savetxt('biases.txt',network['bias'],delimiter=",")
+        layers = len(network['weights'])
+        for i in range(layers):
+            s1 = "weights{}.txt"
+            s2 = "bias{}.txt"
+            if os.path.exists(s1.format(i)):
+                os.remove(s1.format(i))
+            else:
+                print("File not found")
+        for i in range(layers):
+            np.savetxt(s1.format(i),network['weights'][i],delimiter=",")
+            np.savetxt(s2.format(i),network['bias'][i],delimiter=",")
+        return network
 
 
 #Test seccion
 v1 = [int (x) for x in input().split()]
 v2 = [int (y) for y in input().split()]
-filename = [ str (z) for z in  input().split()]
-dataset = get_dataset(filename[0],filename[1],filename[2])
+#filename = [ str (z) for z in  input().split()]
+#dataset = get_dataset(filename[0],filename[1],filename[2])
 #dataset = np.array([1,2,4,5])
 #dataset.shape = (4,1)
+#print("Train data: ",len(dataset['train_inputs']))
+#print("Train outputs: ",len(dataset['train_outputs']))
+#print("Validation data: ",len(dataset['val_inputs']))
+#print("Validation outputs: ",len(dataset['val_outputs']))
+#print("Test data: ",len(dataset['test_inputs']))
+#print("Test_outputs: ",len(dataset['test_outputs']))
+#---------------------------------------------------------
+network = init_network(v1)
