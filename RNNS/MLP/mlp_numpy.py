@@ -115,6 +115,9 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             n_dataset = len(dataset['val_inputs'])
             iter_errors = []
             for i in range(n_dataset):
+                x,y = dataset['val_inputs'][i].shape
+                dataset['val_inputs'][i].shape = (y,x)
+                dataset['val_outputs'][i].shape = (y,x)
                 val_network = forward_propagate(network,v2,dataset['val_inputs'][i])
                 errors = dataset['val_outputs'][i] - val_network['outputs']
                 x,y = errors.shape
@@ -135,6 +138,9 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             n_dataset = len(dataset['train_inputs'])
             iter_errors = []
             for i in range(n_dataset):
+                x,y = dataset['train_inputs'][i].shape
+                dataset['train_inputs'][i].shape = (y,x)
+                dataset['train_outputs'][i].shape = (y,x)
                 network = forward_propagate(network,v2,dataset['train_inputs'][i])
                 network = backpropagate_error(network,dataset['train_outputs'][i],v2)
                 network = learning_rule(network,l_rate)
@@ -145,6 +151,7 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             aux = iter_errors.sum()
             epoch_error = aux/len(dataset['train_outputs'])
             if epoch_error < expected_error:
+                print("Error de entrenamiento: ",epoch_error)
                 break
             else:
                 continue
@@ -211,17 +218,67 @@ def set_network(opc,network):
 
 
 #Test seccion
+print("MLP_1.0")
 v1 = [int (x) for x in input().split()]
 v2 = [int (y) for y in input().split()]
-#filename = [ str (z) for z in  input().split()]
-#dataset = get_dataset(filename[0],filename[1],filename[2])
-#dataset = np.array([1,2,4,5])
-#dataset.shape = (4,1)
-#print("Train data: ",len(dataset['train_inputs']))
-#print("Train outputs: ",len(dataset['train_outputs']))
-#print("Validation data: ",len(dataset['val_inputs']))
-#print("Validation outputs: ",len(dataset['val_outputs']))
-#print("Test data: ",len(dataset['test_inputs']))
-#print("Test_outputs: ",len(dataset['test_outputs']))
-#---------------------------------------------------------
-network = init_network(v1)
+print("Select option")
+print("1.- Train the network")
+print("2.- Continue a previous training")
+print("3.- Use a trained network")
+opc = int(input())
+if opc == 1:
+    filename = [ str (z) for z in  input().split()]
+    dataset = get_dataset(filename[0],filename[1],filename[2])
+    print("Learning rate: ",end="")
+    l_rate = float(input())
+    print("Epocas de entrenamiento: ",end="")
+    n_epoch = int(input())
+    print("Error esperado: ",end="")
+    e_error = float(input())
+    print("Ronda de validacion: ",end="")
+    v_r = int(input())
+    print()
+    print("Train data: ",len(dataset['train_inputs']))
+    print("Train_outputs: ",len(dataset['train_outputs']))
+    print("Validation_data: ",len(dataset['val_inputs']))
+    print("Validation outputs: ",len(dataset['val_outputs']))
+    print("Test data: ",len(dataset['test_inputs']))
+    print("Test outputs: ",len(dataset['test_outputs']))
+    network = init_network(v1)
+    network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2)
+    print("Do you want to save the values of weights and bias? (Y/N): ",end="")
+    a = input()
+    if a == "Y":
+        set_network(2,network)
+    else:
+        continue
+elif opc == 2:
+    network = init_network(v1)
+    network = set_network(1,network)
+    print("Learning rate: ",end="")
+    l_rate = float(input())
+    print("Epocas de entrenamiento: ",end="")
+    n_epoch = int(input())
+    print("Error esperado: ",end="")
+    e_error = float(input())
+    print("Ronda de validacion: ",end="")
+    v_r = int(input())
+    print()
+    filename = [str(z) for z in input().split()]
+    dataset = get_dataset(filename[0],filename[1],filename[2])
+    network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2)
+    print("Do you want to save the values of weights and bias? (Y/N): ",end="")
+    a = input()
+    if a == "Y":
+        set_network(2,network)
+    else:
+        continue
+else:
+    network = init_network(v1)
+    print("Input vector: ",end="")
+    dataset = [int(i) for i in input().split()]
+    x,y = dataset.shape
+    dataset.shape = (y,x)
+    network = set_network(1,network)
+    network = forward_propagate(network,v2,dataset)
+    print(network['outputs'])
