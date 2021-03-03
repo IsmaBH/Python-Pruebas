@@ -105,33 +105,49 @@ def learning_rule(network,l_rate):
     network['bias'] = new_bias
     return network
 
-def train_network(network,dataset,l_rate,n_epoch,validation_round):
+def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error):
     #This function starts the training of the network for
     #a given number of epoch and return the ideal values for 
     #the weights and biases
-    val_index = 0
-    t_index = 0
-    early_stop = 0
+    prev_error = 0
     for epoch in range(n_epoch):
         if (epoch % validation_round) == 0:
-           val_network = forward_propagate(network,v2,dataset['val_inputs'][val_index])
-           errors = dataset['val_outputs'][val_index] - val_network['outputs']
-           x,y = errors.shape
-           epoch_error = errors.sum()/x
-           val_index += 1
-           if epoch_error > prev_error:
-               early_stop += 1
-               prev_error = epoch_error
-               if early_stop > 3:
-                   print("Choose another arch")
-                   break
+            n_dataset = len(dataset['val_inputs'])
+            iter_errors = []
+            for i in range(n_dataset):
+                val_network = forward_propagate(network,v2,dataset['val_inputs'][i])
+                errors = dataset['val_outputs'][i] - val_network['outputs']
+                x,y = errors.shape
+                error = errors.sum()/x
+                iter_errors.append(error)
+            aux = iter_errors.sum()
+            epoch_error = aux/len(dataset['val_outputs'])
+            print("Error de la epoca de validacion: ",epoch_error)
+            if epoch_error > prev_error:
+                early_stop += 1
+                prev_error = epoch_error
+            if early_stop > 3:
+                print("Choose another arch")
+                break
            else:
                early_stop = 0
         else:
-            network = forward_propagate(network,v2,dataset['train_inputs'][t_index])
-            network = backpropagate_error(network,dataset['train_outputs'][t_index])
-            network = learning_rule(network,l_rate)
-            t_index += 1
+            n_dataset = len(dataset['train_inputs'])
+            iter_errors = []
+            for i in range(n_dataset):
+                network = forward_propagate(network,v2,dataset['train_inputs'][i])
+                network = backpropagate_error(network,dataset['train_outputs'][t_index])
+                network = learning_rule(network,l_rate)
+                errors = dataset['train_inputs'][i] - network['outputs']
+                x,y = errors.shape
+                error = errors.sum()/x
+                iter_errors.append(error)
+            aux = iter_errors.sum()
+            epoch_error = aux/len(dataset['train_outputs'])
+            if epoch_error < expected_error:
+                break
+            else:
+                continue
     return network
 
 def get_dataset(filename1,filename2,filename3):
