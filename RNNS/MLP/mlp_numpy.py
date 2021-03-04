@@ -74,12 +74,12 @@ def backpropagate_error(network,expected,v2,v1):
         if i == len(network['outputs'])-1:
             derivate = transfer_derivative(v2[i],network['outputs'][i],v1[i])
             error = expected - network['outputs'][i]
-            sens = ((-2)*derivate)*error
+            sens = np.dot(((-2)*derivate),error)
             sensitivities.append(sens)
         else:
             for j in range(len(network['outputs'])):
                 derivate = transfer_derivative(v2[i],network['outputs'][i],v1[i])
-                sens = (derivate*np.transpose(network['weights'][i]))*sensitivities[j+count]
+                sens = np.dot(np.dot(derivate,np.transpose(network['weights'][i])),sensitivities[j+count])
                 sensitivities.append(sens)
                 count += 1
                 break
@@ -257,6 +257,7 @@ if opc == 1:
     network = init_network(v1)
     network = forward_propagate(network,v2,dataset['train_inputs'][0])
     network = backpropagate_error(network,dataset['train_outputs'][0],v2,v1)
+    network = learning_rule(network,l_rate)
     print(network)
 """
     network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2)
