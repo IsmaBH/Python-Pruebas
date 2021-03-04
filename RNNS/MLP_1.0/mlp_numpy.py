@@ -73,34 +73,50 @@ def backpropagate_error(network,expected,v2,v1):
     count = 0
     for i in reversed(range(len(network['outputs']))):
         if i == len(network['outputs'])-1:
-            derivate = transfer_derivative(v2[i],network['outputs'][i],v1[i])
+            derivate = transfer_derivative(v2[i],network['outputs'][i],v1[i+1])
             error = expected - network['outputs'][i]
             sens = np.dot(((-2)*derivate),error)
             sensitivities.append(sens)
         else:
             for j in range(len(network['outputs'])):
-                derivate = transfer_derivative(v2[i],network['outputs'][i],v1[i])
-                sens = np.dot(np.dot(derivate,np.transpose(network['weights'][i])),sensitivities[j+count])
+                derivate = transfer_derivative(v2[i],network['outputs'][i],v1[i+1])
+                sens = np.dot(np.dot(derivate,np.transpose(network['weights'][i+1])),sensitivities[j+count])
                 sensitivities.append(sens)
                 count += 1
                 break
     network['sens'] = sensitivities
     return network
 
-def learning_rule(network,l_rate):
+def learning_rule(network,l_rate,a0):
     #This function updates the weights and biases according to
     #the sensitivities got in the backpropagate function
     new_weights = list()
     new_bias = list()
+    c = 0
     for i in range(len(network['weights'])):
-        aux1 = l_rate*network['sens'][i]
-        aux2 = aux1*np.transpose(network['outputs'][i])
-        new_weight = network['weights'][i] - aux2
-        new_weights.append(new_weight)
-    for j in range(len(network['bias'])):
-        aux = l_rate*network['sens'][j]
-        new_b = network['bias'][j] - aux
-        new_bias.append(new_b)
+        for j in reversed(range(len(network['weights']))):
+                if i == 0 :
+                    aux1 = l_rate*network['sens'][j-c]
+                    aux2 = aux1*np.transpose(a0)
+                    n_w = network['weights'][i] - aux2
+                    new_weights.append(n_w)
+                    c += 1
+                    break
+                else:
+                    aux1 = l_rate*network['sens'][j-c]
+                    aux2 = aux1*np.transpose(network['outputs'][i-1])
+                    n_w = network['weights'][i] - aux2
+                    new_weights.append(n_w)
+                    c += 1
+                    break
+    c = 0
+    for i in range(len(network['bias'])):
+        for j in reversed(range(len(network['bias']))):
+            aux = l_rate*network['sens'][j-c]
+            n_b = network['bias'][i] - aux
+            new_bias.append(n_b)
+            c += 1
+            break
     network['weights'] = new_weights
     network['bias'] = new_bias
     return network
@@ -138,7 +154,7 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             for i in range(n_dataset):
                 network = forward_propagate(network,v2,dataset['train_inputs'][i])
                 network = backpropagate_error(network,dataset['train_outputs'][i],v2,v1)
-                network = learning_rule(network,l_rate)
+                network = learning_rule(network,l_rate,dataset['train_inputs'][i])
                 errors = dataset['train_outputs'][i] - network['outputs'][len(v2)-1]
                 x,y = errors.shape
                 error = errors.sum()/x
@@ -167,21 +183,20 @@ def get_dataset(filename1,filename2,filename3):
     validation_dataset = np.loadtxt(filename2,dtype=np.int8,delimiter=',',skiprows=0)
     test_dataset = np.loadtxt(filename3,dtype=np.int8,delimiter=',',skiprows=0)
     for i in range(len(train_dataset)-1):
-        outputs_train.append(preprocessing.normalize(train_dataset[i].reshape(1,-1)))
-        inputs_train.append(preprocessing.normalize(train_dataset[i+1].reshape(1,-1)))
+        outputs_train.append(train_dataset[i])
+        inputs_train.append(train_dataset[i+1])
     for i in range(len(validation_dataset)-1):
-        outputs_val.append(preprocessing.normalize(validation_dataset[i].reshape(1,-1)))
-        inputs_val.append(preprocessing.normalize(validation_dataset[i+1].reshape(1,-1)))
+        outputs_val.append(validation_dataset[i])
+        inputs_val.append(validation_dataset[i+1])
     for i in range(len(test_dataset)-1):
-        outputs_test.append(preprocessing.normalize(test_dataset[i].reshape(1,-1)))
-        inputs_test.append(preprocessing.normalize(test_dataset[i+1].reshape(1,-1)))
+        outputs_test.append(test_dataset[i])
+        inputs_test.append(test_dataset[i+1])
     dataset['train_inputs'] = inputs_train
     dataset['train_outputs'] = outputs_train
     dataset['val_inputs'] = inputs_val
     dataset['val_outputs'] = outputs_val
     dataset['test_inputs'] = inputs_test
     dataset['test_outputs'] = outputs_test
-    """
     n_train = len(dataset['train_inputs'])
     n_val = len(dataset['val_inputs'])
     n_test = len(dataset['test_inputs'])
@@ -197,7 +212,6 @@ def get_dataset(filename1,filename2,filename3):
         x = dataset['test_inputs'][i].shape
         dataset['test_inputs'][i] = dataset['test_inputs'][i].reshape(x[0],1)
         dataset['test_outputs'][i] = dataset['test_inputs'][i].reshape(x[0],1)
-    """
     return dataset
 
 def set_network(opc,network):
@@ -257,11 +271,13 @@ if opc == 1:
     print("Test data: ",len(dataset['test_inputs']))
     print("Test outputs: ",len(dataset['test_outputs']))
     network = init_network(v1)
+    """
+    network = forward_propagate(network,v2,dataset['train_inputs'][0])
+    network = backpropagate_error(network,dataset['train_outputs'][0],v2,v1)
+    network = learning_rule(network,l_rate,dataset['train_inputs'][0])
     print(network)
-    print(dataset['train_inputs'][0])
-"""
+    """
     network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2,v1)
-    print(network)
     print("Do you want to save the values of weights and bias? (Y/N): ",end="")
     a = input()
     if a == "Y":
@@ -294,4 +310,3 @@ else:
     network = set_network(1,network)
     network = forward_propagate(network,v2,dataset)
     print(network['outputs'])
-"""
