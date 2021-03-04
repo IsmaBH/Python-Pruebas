@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn import preprocessing
 import os
 
 def init_network(v1):
@@ -31,7 +32,7 @@ def transfer(opc,activation):
     elif opc == 2:
         return 1.0/(1.0 + np.exp(-activation))
     else:
-        return np.divide(np.exp(activation) - np.exp(-activation),(np.exp(activation) + np.exp(-activation)))
+        return (np.exp(activation) - np.exp(-activation))/(np.exp(activation) + np.exp(-activation))
 
 def forward_propagate(network,v2,row):
     #Function that makes de propagation of the data
@@ -104,7 +105,7 @@ def learning_rule(network,l_rate):
     network['bias'] = new_bias
     return network
 
-def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error,v2):
+def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error,v2,v1):
     #This function starts the training of the network for
     #a given number of epoch and return the ideal values for 
     #the weights and biases
@@ -115,15 +116,15 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             n_dataset = len(dataset['val_inputs'])
             iter_errors = []
             for i in range(n_dataset):
-                val_network = forward_propagate(network,v2,dataset['val_inputs'][i])
-                errors = dataset['val_outputs'][i] - val_network['outputs'][len(v2)-1]
+                network = forward_propagate(network,v2,dataset['val_inputs'][i])
+                errors = dataset['val_outputs'][i] - network['outputs'][len(v2)-1]
                 x,y = errors.shape
                 error = errors.sum()/x
                 iter_errors.append(error)
             aux = sum(iter_errors)
             epoch_error = aux/len(dataset['val_outputs'][len(v2)-1])
             print("Error de la epoca de validacion: ",epoch_error)
-            if epoch_error > prev_error:
+            if epoch_error >= prev_error:
                 early_stop += 1
                 prev_error = epoch_error
                 if early_stop > 3:
@@ -136,10 +137,9 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             iter_errors = []
             for i in range(n_dataset):
                 network = forward_propagate(network,v2,dataset['train_inputs'][i])
-                network = backpropagate_error(network,dataset['train_outputs'][i],v2)
+                network = backpropagate_error(network,dataset['train_outputs'][i],v2,v1)
                 network = learning_rule(network,l_rate)
-                #print(network)
-                errors = dataset['train_inputs'][i] - network['outputs'][len(v2)-1]
+                errors = dataset['train_outputs'][i] - network['outputs'][len(v2)-1]
                 x,y = errors.shape
                 error = errors.sum()/x
                 iter_errors.append(error)
@@ -167,20 +167,21 @@ def get_dataset(filename1,filename2,filename3):
     validation_dataset = np.loadtxt(filename2,dtype=np.int8,delimiter=',',skiprows=0)
     test_dataset = np.loadtxt(filename3,dtype=np.int8,delimiter=',',skiprows=0)
     for i in range(len(train_dataset)-1):
-        outputs_train.append(train_dataset[i])
-        inputs_train.append(train_dataset[i+1])
+        outputs_train.append(preprocessing.normalize(train_dataset[i].reshape(1,-1)))
+        inputs_train.append(preprocessing.normalize(train_dataset[i+1].reshape(1,-1)))
     for i in range(len(validation_dataset)-1):
-        outputs_val.append(validation_dataset[i])
-        inputs_val.append(validation_dataset[i+1])
+        outputs_val.append(preprocessing.normalize(validation_dataset[i].reshape(1,-1)))
+        inputs_val.append(preprocessing.normalize(validation_dataset[i+1].reshape(1,-1)))
     for i in range(len(test_dataset)-1):
-        outputs_test.append(test_dataset[i])
-        inputs_test.append(test_dataset[i+1])
+        outputs_test.append(preprocessing.normalize(test_dataset[i].reshape(1,-1)))
+        inputs_test.append(preprocessing.normalize(test_dataset[i+1].reshape(1,-1)))
     dataset['train_inputs'] = inputs_train
     dataset['train_outputs'] = outputs_train
     dataset['val_inputs'] = inputs_val
     dataset['val_outputs'] = outputs_val
     dataset['test_inputs'] = inputs_test
     dataset['test_outputs'] = outputs_test
+    """
     n_train = len(dataset['train_inputs'])
     n_val = len(dataset['val_inputs'])
     n_test = len(dataset['test_inputs'])
@@ -196,6 +197,7 @@ def get_dataset(filename1,filename2,filename3):
         x = dataset['test_inputs'][i].shape
         dataset['test_inputs'][i] = dataset['test_inputs'][i].reshape(x[0],1)
         dataset['test_outputs'][i] = dataset['test_inputs'][i].reshape(x[0],1)
+    """
     return dataset
 
 def set_network(opc,network):
@@ -254,13 +256,9 @@ if opc == 1:
     print("Validation outputs: ",len(dataset['val_outputs']))
     print("Test data: ",len(dataset['test_inputs']))
     print("Test outputs: ",len(dataset['test_outputs']))
+    print(dataset)
     network = init_network(v1)
-    network = forward_propagate(network,v2,dataset['train_inputs'][0])
-    network = backpropagate_error(network,dataset['train_outputs'][0],v2,v1)
-    network = learning_rule(network,l_rate)
-    print(network)
-"""
-    network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2)
+    network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2,v1)
     print(network)
     print("Do you want to save the values of weights and bias? (Y/N): ",end="")
     a = input()
@@ -280,7 +278,7 @@ elif opc == 2:
     print()
     filename = [str(z) for z in input().split()]
     dataset = get_dataset(filename[0],filename[1],filename[2])
-    network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2)
+    network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2,v1)
     print("Do you want to save the values of weights and bias? (Y/N): ",end="")
     a = input()
     if a == "Y":
@@ -294,4 +292,3 @@ else:
     network = set_network(1,network)
     network = forward_propagate(network,v2,dataset)
     print(network['outputs'])
-"""
