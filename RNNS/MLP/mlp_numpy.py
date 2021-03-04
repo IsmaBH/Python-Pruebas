@@ -45,41 +45,40 @@ def forward_propagate(network,v2,row):
     network['outputs'] = new_inputs
     return network
 
-def transfer_derivative(opc,output):
+def transfer_derivative(opc,output,v1):
     #Function that set the derivates for the networok
     #See transfer function for the meaning of the options
     if opc == 1:
-        x,y = output.shape
-        output.shape = (y,x)
-        purelin = np.diag(output)
+        aux = np.ones(v1)
+        purelin = np.diag(aux)
         return purelin
     elif opc == 2:
         x,y = output.shape
-        output.shape = (y,x)
-        aux = output[0]*(1.0 - output)
-        sigmoid = diag(aux)
+        output = output.reshape(y,x)
+        aux = output[0]*(1 - output[0])
+        sigmoid = np.diag(aux)
         return sigmoid
     else:
         x,y = output.shape
-        output.shape = (y,x)
-        aux = 1 - np.power(transfer(3,output),2)
+        output = output.reshape(y,x)
+        aux = 1 - np.power(transfer(3,output[0]),2)
         tansig = np.diag(aux)
         return tansig
 
-def backpropagate_error(network,expected,v2):
+def backpropagate_error(network,expected,v2,v1):
     #Function that implements the backprpagation of the error
     #to get the sensitivities of the network
     sensitivities = list()
     count = 0
     for i in reversed(range(len(network['outputs']))):
         if i == len(network['outputs'])-1:
-            derivate = transfer_derivative(v2[i],network['outputs'][i])
+            derivate = transfer_derivative(v2[i],network['outputs'][i],v1[i])
             error = expected - network['outputs'][i]
             sens = ((-2)*derivate)*error
             sensitivities.append(sens)
         else:
             for j in range(len(network['outputs'])):
-                derivate = transfer_derivative(v2[i],network['outputs'][i])
+                derivate = transfer_derivative(v2[i],network['outputs'][i],v1[i])
                 sens = (derivate*np.transpose(network['weights'][i]))*sensitivities[j+count]
                 sensitivities.append(sens)
                 count += 1
@@ -98,7 +97,7 @@ def learning_rule(network,l_rate):
         new_weight = network['weights'][i] - aux2
         new_weights.append(new_weight)
     for j in range(len(network['bias'])):
-        aux = l_rate*network['sens'][i]
+        aux = l_rate*network['sens'][j]
         new_b = network['bias'][j] - aux
         new_bias.append(new_b)
     network['weights'] = new_weights
@@ -116,12 +115,7 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             n_dataset = len(dataset['val_inputs'])
             iter_errors = []
             for i in range(n_dataset):
-                x = dataset['val_inputs'][i].shape
-                dataset['val_inputs'][i] = dataset['val_inputs'][i].reshape(x[0],1)
-                dataset['val_outputs'][i] = dataset['val_outputs'][i].reshape(x[0],1)
                 val_network = forward_propagate(network,v2,dataset['val_inputs'][i])
-                print("outputs validacion")
-                print(val_network['outputs'])
                 errors = dataset['val_outputs'][i] - val_network['outputs'][len(v2)-1]
                 x,y = errors.shape
                 error = errors.sum()/x
@@ -141,14 +135,10 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
             n_dataset = len(dataset['train_inputs'])
             iter_errors = []
             for i in range(n_dataset):
-                x = dataset['train_inputs'][i].shape
-                dataset['train_inputs'][i] = dataset['train_inputs'][i].reshape(x[0],1)
-                dataset['train_outputs'][i] = dataset['train_outputs'][i].reshape(x[0],1)
                 network = forward_propagate(network,v2,dataset['train_inputs'][i])
-                print("outputs train")
-                print(network['outputs'])
                 network = backpropagate_error(network,dataset['train_outputs'][i],v2)
                 network = learning_rule(network,l_rate)
+                #print(network)
                 errors = dataset['train_inputs'][i] - network['outputs'][len(v2)-1]
                 x,y = errors.shape
                 error = errors.sum()/x
@@ -191,6 +181,21 @@ def get_dataset(filename1,filename2,filename3):
     dataset['val_outputs'] = outputs_val
     dataset['test_inputs'] = inputs_test
     dataset['test_outputs'] = outputs_test
+    n_train = len(dataset['train_inputs'])
+    n_val = len(dataset['val_inputs'])
+    n_test = len(dataset['test_inputs'])
+    for i in range(n_train):
+        x = dataset['train_inputs'][i].shape
+        dataset['train_inputs'][i] = dataset['train_inputs'][i].reshape(x[0],1)
+        dataset['train_outputs'][i] = dataset['train_outputs'][i].reshape(x[0],1)
+    for i in range(n_val):
+        x = dataset['val_inputs'][i].shape
+        dataset['val_inputs'][i] = dataset['val_inputs'][i].reshape(x[0],1)
+        dataset['val_outputs'][i] = dataset['val_outputs'][i].reshape(x[0],1)
+    for i in range(n_test):
+        x = dataset['test_inputs'][i].shape
+        dataset['test_inputs'][i] = dataset['test_inputs'][i].reshape(x[0],1)
+        dataset['test_outputs'][i] = dataset['test_inputs'][i].reshape(x[0],1)
     return dataset
 
 def set_network(opc,network):
@@ -250,7 +255,12 @@ if opc == 1:
     print("Test data: ",len(dataset['test_inputs']))
     print("Test outputs: ",len(dataset['test_outputs']))
     network = init_network(v1)
+    network = forward_propagate(network,v2,dataset['train_inputs'][0])
+    network = backpropagate_error(network,dataset['train_outputs'][0],v2,v1)
+    print(network)
+"""
     network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2)
+    print(network)
     print("Do you want to save the values of weights and bias? (Y/N): ",end="")
     a = input()
     if a == "Y":
@@ -283,3 +293,4 @@ else:
     network = set_network(1,network)
     network = forward_propagate(network,v2,dataset)
     print(network['outputs'])
+"""
