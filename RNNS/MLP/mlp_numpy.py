@@ -9,10 +9,10 @@ def init_network(v1):
     network = {}
     layers = len(v1)
     for i in range(layers-1):
-        w_layer = np.random.randint(1,3,(v1[i+1],v1[i]))
+        w_layer = np.random.random((v1[i+1],v1[i]))
         w_network.append(w_layer)
     for i in range(layers-1):
-        b_layer = np.random.randint(1,3,(v1[i+1],1))
+        b_layer = np.random.random((v1[i+1],1))
         b_network.append(b_layer)
     network['weights'] = w_network
     network['bias'] = b_network
@@ -256,8 +256,10 @@ if opc == 1:
     print("Validation outputs: ",len(dataset['val_outputs']))
     print("Test data: ",len(dataset['test_inputs']))
     print("Test outputs: ",len(dataset['test_outputs']))
-    print(dataset)
     network = init_network(v1)
+    print(network)
+    print(dataset['train_inputs'][0])
+"""
     network = train_network(network,dataset,l_rate,n_epoch,v_r,e_error,v2,v1)
     print(network)
     print("Do you want to save the values of weights and bias? (Y/N): ",end="")
@@ -292,3 +294,4 @@ else:
     network = set_network(1,network)
     network = forward_propagate(network,v2,dataset)
     print(network['outputs'])
+"""
