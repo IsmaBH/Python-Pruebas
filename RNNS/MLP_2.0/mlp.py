@@ -15,11 +15,16 @@ def get_dataset(filename1):
     return dataset
 
 #Test section
+print("Nombre del archivo de entrenamiento: ",end="")
 filename = input()
-#dataset = get_dataset(filename)
-data = np.array([int(i) for i in input().split()])
+dataset = get_dataset(filename)
+print("Valores a probar despues del entrenamiento: ",end="")
+aux = np.array([int(i) for i in input().split()])
+data = aux.reshape(1,-1)
+print("Tamaño de la red: ",end="")
 layer_size = tuple(int(x) for x in input().split())
-print(layer_size)
-regr = MLPRegressor(hidden_layer_sizes=layer_size,activation='logistic',solver='adam',alpha=1.0,batch_size='auto',learning_rate='constant',learning_rate_init=0.001,max_iter=1000,random_state=1,verbose=True,early_stopping=True,validation_fraction=0.1)
+print("Numero de epocas: ",end="")
+epoch = int(input())
+regr = MLPRegressor(hidden_layer_sizes=layer_size,activation='logistic',solver='adam',alpha=1.0,batch_size='auto',learning_rate='constant',learning_rate_init=0.001,max_iter=epoch,random_state=1,verbose=True,early_stopping=True,validation_fraction=0.1)
 regr.fit(dataset['X'],dataset['Y'])
 print(regr.predict(data))
