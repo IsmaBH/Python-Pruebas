@@ -138,12 +138,12 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
                 error = errors.sum()/x
                 iter_errors.append(error)
             aux = sum(iter_errors)
-            epoch_error = aux/len(dataset['val_outputs'][len(v2)-1])
+            epoch_error = aux/n_dataset
             print("Error de la epoca de validacion: ",epoch_error)
             if epoch_error >= prev_error:
                 early_stop += 1
                 prev_error = epoch_error
-                if early_stop > 3:
+                if early_stop >= 3:
                     print("Choose another arch")
                     break
             else:
@@ -160,7 +160,8 @@ def train_network(network,dataset,l_rate,n_epoch,validation_round,expected_error
                 error = errors.sum()/x
                 iter_errors.append(error)
             aux = sum(iter_errors)
-            epoch_error = aux/len(dataset['train_outputs'][len(v2)-1])
+            epoch_error = aux/n_dataset
+            print("Error de la epoca: ", epoch_error)
             if epoch_error < expected_error:
                 print("Error de entrenamiento: ",epoch_error)
                 break
@@ -223,8 +224,10 @@ def set_network(opc,network):
         for i in range(layers):
             s1 = "weights{}.txt"
             s2 = "bias{}.txt"
-            network['weights'][i] = np.loadtxt(s1.format(i))
-            network['bias'][i] = np.loadtxt(s2.format(i))
+            network['weights'][i] = np.loadtxt(s1.format(i),dtype=np.longdouble,delimiter=',')
+            aux = np.loadtxt(s2.format(i),dtype=np.longdouble,delimiter=',')
+            x = aux.shape
+            network['bias'][i] = aux.reshape(x[0],1)
         return network
     else:
         #If opc is another number then we save the weights and biases
@@ -303,10 +306,11 @@ elif opc == 2:
         set_network(2,network)
 else:
     network = init_network(v1)
-    print("Input vector: ",end="")
-    dataset = [int(i) for i in input().split()]
-    x,y = dataset.shape
-    dataset.shape = (y,x)
+    print("Input vector (n,n,n,n,n,n,n) : ",end="")
+    aux = input()
+    dataset = np.fromstring(aux,dtype=np.int8,sep=',')
+    x = dataset.shape
+    dataset = dataset.reshape(x[0],1)
     network = set_network(1,network)
     network = forward_propagate(network,v2,dataset)
     print(network['outputs'])
