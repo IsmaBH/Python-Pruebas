@@ -45,7 +45,7 @@ public class Juego extends JPanel{
 		while(true){
 			try{
 				Thread.sleep(10);
-				game.repaint();
+				miventana.repaint();
 			}catch(InterruptedException ex){
 				System.out.println("Ocurrio un error");
 			}
