@@ -6,8 +6,10 @@
 
 import java.awt.Graphics;
 import java.awt.Color;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
-public class Laberinto{
+public class Laberinto extends JPanel{
 	//Atributos de la clase
 	private int fila = 0;
 	private int columna = 0;

@@ -5,8 +5,11 @@
 
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.Color;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
-public class Personaje{
+public class Personaje extends JPanel{
 	//Atributos de la clase
 	Laberinto lab = new Laberinto();
 	private int x = 40;
@@ -19,7 +22,7 @@ public class Personaje{
 	public void paint(Graphics grafico){
 		grafico.setColor(Color.red);
 		grafico.fillOval(x,y,ancho,alto);
-		grafico.SetColor(Color.black);
+		grafico.setColor(Color.black);
 		grafico.drawOval(x,y,ancho,alto);
 	}
 	public void teclaPresionada(KeyEvent evento){
@@ -27,19 +30,19 @@ public class Personaje{
 		//Tecla izquierda
 		if(evento.getKeyCode() == 37){
 			if(laberinto[y/40][(x/40)-1] != 1){
-				x = x - movimento;
+				x = x - movimiento;
 			}
 		}
 		//Tecla derecha
 		if(evento.getKeyCode() == 39){
 			if(laberinto[y/40][(x/40)+1] != 1){
-				x = x + movimento;
+				x = x + movimiento;
 			}
 		}
 		//Tecla abajo
 		if(evento.getKeyCode() == 40){
 			if(laberinto[(y/40)+1][x/40] != 1){
-				y = y + movimento;
+				y = y + movimiento;
 			}
 		}
 		//Tecla arriba

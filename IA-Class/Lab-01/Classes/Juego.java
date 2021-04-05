@@ -5,6 +5,7 @@
 
 import java.awt.Graphics;
 import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -44,10 +45,10 @@ public class Juego extends JPanel{
 		while(true){
 			try{
 				Thread.sleep(10);
+				game.repaint();
 			}catch(InterruptedException ex){
 				System.out.println("Ocurrio un error");
 			}
-			game.repaint();
 		}
 	}
 }
