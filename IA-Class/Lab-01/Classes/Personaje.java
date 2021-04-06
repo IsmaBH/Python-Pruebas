@@ -57,9 +57,27 @@ public class Personaje extends JPanel{
 		}
 	}
 	public void posicionActual(int valor,int x,int y){
+		int laberinto[][] = lab.obtieneLaberinto();
+		int caminos = 0;
 		if (valor == 1) {
-			System.out.println("Piso: ");
-			System.out.println(x+","+y);
+			if (laberinto[(x/40)+1][y/40] != 0) {
+				caminos++;
+				if (laberinto[(x/40)-1][y/40] != 0) {
+					caminos++;
+					if (laberinto[x/40][(y/40)-1] != 0) {
+						caminos++;
+						if (laberinto[x/40][(y/40)+1] != 0) {
+							caminos++;
+							if (caminos > 1) {
+								System.out.println("Soy una decision!!");
+							}
+						}
+					}
+				}
+			}else{
+				System.out.println("Piso: ");
+				System.out.println(x+","+y);
+			}
 		}
 		if (valor == 2) {
 			System.out.print("Agua: ");
