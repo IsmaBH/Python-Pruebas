@@ -1,18 +1,28 @@
 public class Node {
-    private Integer value;
+    private int coorX;
+    private int coorY;
     private Node nextElement;
     private Node previousElement;
  
-    public Node(Integer value) {
-        this.value = value;
+    public Node(int x,int y) {
+        this.coorX = x;
+        this.coorY = y;
     }
  
-    public Integer getValue() {
-        return value;
+    public Integer getValueX() {
+        return coorX;
     }
- 
-    public void setValue(Integer value) {
-        this.value = value;
+
+    public Integer getValueY() {
+        return coorY;
+    }
+
+    public void setValueX(Integer value) {
+        this.coorX = value;
+    }
+
+    public void setValueY(Integer value) {
+        this.coorY = value;
     }
  
     public Node getNextElement() {

@@ -25,11 +25,10 @@ public class listaDoble{
             head = node;
         }
     }
- 
-    public boolean find(int value) {
+    public boolean find(int x,int y) {
         boolean c = false;
         for (Node i = head; i != null; i = i.getNextElement()) {
-            if (i.getValue() == value) {
+            if (i.getValueX() == x & i.getValueY() == y) {
                 c = true;
                 break;
             }else{

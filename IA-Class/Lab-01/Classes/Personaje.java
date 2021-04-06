@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 public class Personaje extends JPanel{
 	//Atributos de la clase
 	Laberinto lab = new Laberinto();
+	listaDoble visitados = new listaDoble();
 	private int x = 40;
 	private int y = 40;
 	private final int ancho = 40;
@@ -60,23 +61,10 @@ public class Personaje extends JPanel{
 		int laberinto[][] = lab.obtieneLaberinto();
 		int caminos = 0;
 		if (valor == 1) {
-			if (laberinto[(x/40)+1][y/40] != 0) {
+			if (laberinto[(x/40)+1][y/40] != 0 & (!visitados.find((x/40)+1,y/40))){
 				caminos++;
-				if (laberinto[(x/40)-1][y/40] != 0) {
-					caminos++;
-					if (laberinto[x/40][(y/40)-1] != 0) {
-						caminos++;
-						if (laberinto[x/40][(y/40)+1] != 0) {
-							caminos++;
-							if (caminos > 1) {
-								System.out.println("Soy una decision!!");
-							}
-						}
-					}
-				}
-			}else{
-				System.out.println("Piso: ");
-				System.out.println(x+","+y);
+			}else if(laberinto[(x/40)-1][y/40] != 0 & (!visitados.find((x/40)-1,y/40))){
+				caminos++;
 			}
 		}
 		if (valor == 2) {
