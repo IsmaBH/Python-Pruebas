@@ -2,8 +2,8 @@ public class listaDoble{
     private Node tail;
     private Node head;
  
-    public void addLast(Integer value) {
-        Node node = new Node(value);
+    public void addLast(Integer x,Integer y) {
+        Node node = new Node(x,y);
         if (tail == null && head == null) {
             tail = node;
             head = node;
@@ -14,8 +14,8 @@ public class listaDoble{
         }
     }
  
-    public void addFirst(Integer value) {
-        Node node = new Node(value);
+    public void addFirst(Integer x,Integer y) {
+        Node node = new Node(x,y);
         if (tail == null && head == null) {
             tail = node;
             head = node;

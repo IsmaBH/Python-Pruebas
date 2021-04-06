@@ -25,6 +25,7 @@ public class Personaje extends JPanel{
 		grafico.fillOval(x,y,ancho,alto);
 		grafico.setColor(Color.black);
 		grafico.drawOval(x,y,ancho,alto);
+		visitados.addLast(x,y);
 	}
 	public void teclaPresionada(KeyEvent evento){
 		int laberinto[][] = lab.obtieneLaberinto();
@@ -60,11 +61,19 @@ public class Personaje extends JPanel{
 	public void posicionActual(int valor,int x,int y){
 		int laberinto[][] = lab.obtieneLaberinto();
 		int caminos = 0;
+		int counter = 0;
 		if (valor == 1) {
-			if (laberinto[(x/40)+1][y/40] != 0 & (!visitados.find((x/40)+1,y/40))){
-				caminos++;
-			}else if(laberinto[(x/40)-1][y/40] != 0 & (!visitados.find((x/40)-1,y/40))){
-				caminos++;
+			for (int i = -1;i<=1;i=i+2) {
+				if (laberinto[(x/40)+i][y/40] != 0 & (!visitados.find((x/40)+i,y/40))) {
+					caminos++;
+				}else{}
+				for (int j = -1;j<=1;j=j+2) {
+					counter = counter + 2;
+					if(laberinto[x/40][(y/40)+(j+counter)] != 0 & (!visitados.find(x/40,(y/40)+(j+counter)))) {
+						caminos++;
+					}else{}
+					break;
+				}
 			}
 		}
 		if (valor == 2) {
