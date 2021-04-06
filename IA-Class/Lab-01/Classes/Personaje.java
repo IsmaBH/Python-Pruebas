@@ -29,27 +29,48 @@ public class Personaje extends JPanel{
 		int laberinto[][] = lab.obtieneLaberinto();
 		//Tecla izquierda
 		if(evento.getKeyCode() == 37){
-			if(laberinto[y/40][(x/40)-1] != 1){
+			if(laberinto[y/40][(x/40)-1] != 0){
 				x = x - movimiento;
+				posicionActual(laberinto[y/40][x/40],x,y);
 			}
 		}
 		//Tecla derecha
 		if(evento.getKeyCode() == 39){
-			if(laberinto[y/40][(x/40)+1] != 1){
+			if(laberinto[y/40][(x/40)+1] != 0){
 				x = x + movimiento;
+				posicionActual(laberinto[y/40][x/40],x,y);
 			}
 		}
 		//Tecla abajo
 		if(evento.getKeyCode() == 40){
-			if(laberinto[(y/40)+1][x/40] != 1){
+			if(laberinto[(y/40)+1][x/40] != 0){
 				y = y + movimiento;
+				posicionActual(laberinto[y/40][x/40],x,y);
 			}
 		}
 		//Tecla arriba
 		if(evento.getKeyCode() == 38){
-			if(laberinto[(y/40)-1][x/40] != 1){
+			if(laberinto[(y/40)-1][x/40] != 0){
 				y = y - movimiento;
+				posicionActual(laberinto[y/40][x/40],x,y);
 			}
+		}
+	}
+	public void posicionActual(int valor,int x,int y){
+		if (valor == 1) {
+			System.out.println("Piso: ");
+			System.out.println(x+","+y);
+		}
+		if (valor == 2) {
+			System.out.print("Agua: ");
+			System.out.println(x+","+y);
+		}
+		if (valor == 3) {
+			System.out.print("Arena: ");
+			System.out.println(x+","+y);
+		}
+		if (valor == 4) {
+			System.out.println("LLegaste a la meta!!");
 		}
 	}
 }
