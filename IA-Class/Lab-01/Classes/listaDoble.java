@@ -1,6 +1,12 @@
 public class listaDoble{
     private Node tail;
     private Node head;
+
+    public listaDoble(){}
+    public listaDoble(Node e){
+        tail = e;
+        head = e;
+    }
  
     public void addLast(Integer x,Integer y) {
         Node node = new Node(x,y);

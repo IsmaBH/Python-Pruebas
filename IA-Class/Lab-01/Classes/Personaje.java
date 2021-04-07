@@ -12,12 +12,13 @@ import javax.swing.JPanel;
 public class Personaje extends JPanel{
 	//Atributos de la clase
 	Laberinto lab = new Laberinto();
-	listaDoble visitados = new listaDoble();
 	private int x = 40;
 	private int y = 40;
 	private final int ancho = 40;
 	private final int alto = 40;
 	private final int movimiento = 40;
+	Node e = new Node(1,1);
+	listaDoble visitados = new listaDoble(e);
 	//Metodos de la clase
 	@Override
 	public void paint(Graphics grafico){
@@ -32,66 +33,74 @@ public class Personaje extends JPanel{
 		if(evento.getKeyCode() == 37){
 			if(laberinto[y/40][(x/40)-1] != 0){
 				x = x - movimiento;
-				visitados.addLast((x/40),(y/40));
 				posicionActual(laberinto[y/40][x/40],x,y);
+				if (!visitados.find(x/40,y/40)) {
+					visitados.addLast((x/40),(y/40));
+				}
 			}
 		}
 		//Tecla derecha
 		if(evento.getKeyCode() == 39){
 			if(laberinto[y/40][(x/40)+1] != 0){
 				x = x + movimiento;
-				visitados.addLast((x/40),(y/40));
 				posicionActual(laberinto[y/40][x/40],x,y);
+				if (!visitados.find(x/40,y/40)) {
+					visitados.addLast((x/40),(y/40));
+				}
 			}
 		}
 		//Tecla abajo
 		if(evento.getKeyCode() == 40){
 			if(laberinto[(y/40)+1][x/40] != 0){
 				y = y + movimiento;
-				visitados.addLast((x/40),(y/40));
 				posicionActual(laberinto[y/40][x/40],x,y);
+				if (!visitados.find(x/40,y/40)) {
+					visitados.addLast((x/40),(y/40));
+				}
 			}
 		}
 		//Tecla arriba
 		if(evento.getKeyCode() == 38){
 			if(laberinto[(y/40)-1][x/40] != 0){
 				y = y - movimiento;
-				visitados.addLast((x/40),(y/40));
 				posicionActual(laberinto[y/40][x/40],x,y);
+				if (!visitados.find(x/40,y/40)) {
+					visitados.addLast((x/40),(y/40));
+				}
 			}
+		}
+	}
+	//Metodo Auxiliar para la verificacion de las casillas(sensores)
+	public void sensores(int x,int y){
+		int laberinto[][] = lab.obtieneLaberinto();
+		int caminos = 0;
+		if (laberinto[y/40][(x/40)-1] != 0 && !visitados.find((x/40)-1,y/40)) {
+			caminos++;
+		}
+		if (laberinto[y/40][(x/40)+1] != 0 && !visitados.find((x/40)+1,y/40)) {
+			caminos++;
+		}
+		if (laberinto[(y/40)+1][x/40] != 0 && !visitados.find(x/40,(y/40)+1)) {
+			caminos++;
+		}
+		if (laberinto[(y/40)-1][x/40] != 0 && !visitados.find(x/40,(y/40)-1)) {
+			caminos++;
+		}
+		if (caminos > 1) {
+			System.out.println("Soy una decisión con "+caminos+" caminos");
+			visitados.print();
+		}else if(caminos == 1){
+			System.out.println("Soy un camino: "+x+","+y+" Con "+caminos+" caminos");
+			visitados.print();
+		}else if (caminos == 0) {
+			System.out.println("Soy un callejon tengo "+caminos+" disponibles");
+			visitados.print();
 		}
 	}
 	public void posicionActual(int valor,int x,int y){
 		int laberinto[][] = lab.obtieneLaberinto();
-		int caminos = 0;
-		int counter = 0;
 		if (valor == 1) {
-			for (int i = -1;i<=1;i=i+2) {
-				if ((laberinto[(x/40)+i][y/40] != 0) && !(visitados.find(((x/40)+i),(y/40)))) {
-					caminos++;
-				}else{
-					continue;
-				}
-				for (int j = -1;j<=1;j=j+2) {
-					if((laberinto[x/40][(y/40)+(j+counter)] != 0) && !(visitados.find((x/40),((y/40)+(j+counter))))) {
-						caminos++;
-					}else{
-						continue;
-					}
-					counter = counter + 2;
-					break;
-				}
-			}
-			if (caminos > 1) {
-				System.out.println("Soy una decisión con "+caminos+" caminos");
-				visitados.print();
-			}else if(caminos == 1){
-				System.out.println("Soy un camino: "+x+","+y+" Con "+caminos+" caminos");
-				visitados.print();
-			}else if (caminos == 0) {
-				System.out.println("Soy un callejon tengo "+caminos+" disponibles");
-				visitados.print();
-			}
+			sensores(x,y);
 		}
 		if (valor == 2) {
 			System.out.print("Agua: ");
