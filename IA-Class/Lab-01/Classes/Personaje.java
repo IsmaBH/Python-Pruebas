@@ -25,7 +25,6 @@ public class Personaje extends JPanel{
 		grafico.fillOval(x,y,ancho,alto);
 		grafico.setColor(Color.black);
 		grafico.drawOval(x,y,ancho,alto);
-		visitados.addLast(x,y);
 	}
 	public void teclaPresionada(KeyEvent evento){
 		int laberinto[][] = lab.obtieneLaberinto();
@@ -33,6 +32,7 @@ public class Personaje extends JPanel{
 		if(evento.getKeyCode() == 37){
 			if(laberinto[y/40][(x/40)-1] != 0){
 				x = x - movimiento;
+				visitados.addLast((x/40),(y/40));
 				posicionActual(laberinto[y/40][x/40],x,y);
 			}
 		}
@@ -40,6 +40,7 @@ public class Personaje extends JPanel{
 		if(evento.getKeyCode() == 39){
 			if(laberinto[y/40][(x/40)+1] != 0){
 				x = x + movimiento;
+				visitados.addLast((x/40),(y/40));
 				posicionActual(laberinto[y/40][x/40],x,y);
 			}
 		}
@@ -47,6 +48,7 @@ public class Personaje extends JPanel{
 		if(evento.getKeyCode() == 40){
 			if(laberinto[(y/40)+1][x/40] != 0){
 				y = y + movimiento;
+				visitados.addLast((x/40),(y/40));
 				posicionActual(laberinto[y/40][x/40],x,y);
 			}
 		}
@@ -54,6 +56,7 @@ public class Personaje extends JPanel{
 		if(evento.getKeyCode() == 38){
 			if(laberinto[(y/40)-1][x/40] != 0){
 				y = y - movimiento;
+				visitados.addLast((x/40),(y/40));
 				posicionActual(laberinto[y/40][x/40],x,y);
 			}
 		}
@@ -64,16 +67,30 @@ public class Personaje extends JPanel{
 		int counter = 0;
 		if (valor == 1) {
 			for (int i = -1;i<=1;i=i+2) {
-				if (laberinto[(x/40)+i][y/40] != 0 & (!visitados.find((x/40)+i,y/40))) {
+				if ((laberinto[(x/40)+i][y/40] != 0) && !(visitados.find(((x/40)+i),(y/40)))) {
 					caminos++;
-				}else{}
+				}else{
+					continue;
+				}
 				for (int j = -1;j<=1;j=j+2) {
-					counter = counter + 2;
-					if(laberinto[x/40][(y/40)+(j+counter)] != 0 & (!visitados.find(x/40,(y/40)+(j+counter)))) {
+					if((laberinto[x/40][(y/40)+(j+counter)] != 0) && !(visitados.find((x/40),((y/40)+(j+counter))))) {
 						caminos++;
-					}else{}
+					}else{
+						continue;
+					}
+					counter = counter + 2;
 					break;
 				}
+			}
+			if (caminos > 1) {
+				System.out.println("Soy una decisión con "+caminos+" caminos");
+				visitados.print();
+			}else if(caminos == 1){
+				System.out.println("Soy un camino: "+x+","+y+" Con "+caminos+" caminos");
+				visitados.print();
+			}else if (caminos == 0) {
+				System.out.println("Soy un callejon tengo "+caminos+" disponibles");
+				visitados.print();
 			}
 		}
 		if (valor == 2) {

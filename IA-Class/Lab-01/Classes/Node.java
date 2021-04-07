@@ -40,11 +40,8 @@ public class Node {
     public void setPreviousElement(Node previousElement) {
         this.previousElement = previousElement;
     }
- 
     @Override
     public String toString() {
-        return "Node [value=" + value + ", nextElement=" + ((nextElement != null) ? nextElement.getValue()
-                : null) + ", previousElement=" +( (previousElement != null) ? previousElement.getValue() : null) + "]";
+        return "Node [values= " +coorX+","+coorY+"]";
     }
- 
 }

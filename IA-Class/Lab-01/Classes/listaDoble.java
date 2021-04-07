@@ -28,7 +28,7 @@ public class listaDoble{
     public boolean find(int x,int y) {
         boolean c = false;
         for (Node i = head; i != null; i = i.getNextElement()) {
-            if (i.getValueX() == x & i.getValueY() == y) {
+            if (i.getValueX() == x && i.getValueY() == y) {
                 c = true;
                 break;
             }else{
@@ -36,5 +36,11 @@ public class listaDoble{
             }
         }
         return c;
+    }
+    public void print() {
+        for (Node i = head; i != null; i = i.getNextElement()) {
+            System.out.printf("\t %s ", i.toString());
+        }
+        System.out.println();
     }
 }
