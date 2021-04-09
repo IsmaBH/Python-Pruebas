@@ -33,6 +33,18 @@ public class arbol{
 			}
 		}
 	}
+	public boolean buscarAnchura(Nodo nodo,int x,int y){
+		char resultado = new char[2];
+		for (int i = 0;i<nodo.nohijos;i++) {
+			if (nodo.hijos[i].getX() == x && nodo.hijos[i].getY() == y) {
+				resultado[0] = "1";
+				resultado[1] = nodo.getId();
+			}else{
+				buscarAnchura(nodo.hijos[i],x,y);
+			}
+		}
+		return resultado;
+	}
 }
 
 class Nodo{

@@ -88,13 +88,10 @@ public class Personaje extends JPanel{
 		}
 		if (caminos > 1) {
 			System.out.println("Soy una decisión con "+caminos+" caminos");
-			visitados.print();
 		}else if(caminos == 1){
 			System.out.println("Soy un camino: "+x+","+y+" Con "+caminos+" caminos");
-			visitados.print();
 		}else if (caminos == 0) {
 			System.out.println("Soy un callejon tengo "+caminos+" disponibles");
-			visitados.print();
 		}
 	}
 	public void posicionActual(int valor,int x,int y){
