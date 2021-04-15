@@ -19,6 +19,8 @@ public class Personaje extends JPanel{
 	private final int movimiento = 40;
 	Node e = new Node(1,1);
 	listaDoble visitados = new listaDoble(e);
+	ArbolNario ObjArbol = new ArbolNario();
+	Nodo raiz = ObjArbol.insertarRaiz("0",x/40,y/40);
 	//Metodos de la clase
 	@Override
 	public void paint(Graphics grafico){

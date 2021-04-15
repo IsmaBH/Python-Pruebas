@@ -3,44 +3,44 @@ import java.util.ArrayList;
 public class ArbolNario{
 	Nodo raiz;
 	public ArbolNario(){}
-	public Nodo insertarRaiz(String dato){
-		raiz = new Nodo(dato);
+	public Nodo insertarRaiz(String id,int x,int y){
+		raiz = new Nodo(id,x,y);
 		return raiz;
 	}
-	public void insertarNodo(Nodo nodo,String dato,String padre){
-		Nodo nuevo = new Nodo(dato);
+	public void insertarNodo(Nodo nodo,String id,int x,int y,String padre){
+		Nodo nuevo = new Nodo(id,x,y);
 		//Verificamos si el nodo padre es la raiz
-		if (nodo.getDato().equals(padre)) {
+		if (nodo.getId().equals(padre)) {
 			nodo.aumentarHijo(nuevo);
 		}else{
 			//Si no buscamos al padre entre los hijos
-			for (int i = 0; i < nodo.getHijos() ; i++) {
-				if (nodo.hijos.get(i).getDato().equals(padre)) {
+			for (int i = 0; i < nodo.getNoHijos() ; i++) {
+				if (nodo.hijos.get(i).getId().equals(padre)) {
 					nodo.hijos.get(i).aumentarHijo(nuevo);
 				}else{
-					insertarNodo(nodo.hijos.get(i),dato,padre);
+					insertarNodo(nodo.hijos.get(i),id,padre);
 				}
 			}
 		}
 	}
 	public void recorrer(Nodo raiz){
 		raiz.verInfo();
-		for (int i = 0; i < raiz.getHijos() ; i++ ) {
+		for (int i = 0; i < raiz.getNoHijos() ; i++ ) {
 			recorrer(raiz.hijos.get(i));
 		}
 	}
 	public void recorrerHijosRaiz(Nodo raiz){
-		for (int i = 0; i<raiz.getHijos() ; i++ ) {
+		for (int i = 0; i<raiz.getNoHijos() ; i++ ) {
 			recorrerHijosRaiz(raiz.hijos.get(i));
 		}
 		raiz.verInfo();
 	}
-	public boolean buscar(Nodo raiz,String buscar,boolean encontrado){
-		if (raiz.getDato().equals(buscar)) {
+	public boolean buscar(Nodo raiz,int buscarX,int buscarY,boolean encontrado){
+		if (raiz.getX() == buscarX && raiz.getY() == buscarY) {
 			encontrado = true;
 		}
-		for (int i = 0; i<raiz.getHijos() ; i++) {
-			encontrado = buscar(raiz.hijos.get(i),buscar,encontrado);
+		for (int i = 0; i<raiz.getNoHijos() ; i++) {
+			encontrado = buscar(raiz.hijos.get(i),buscarX,buscarY,encontrado);
 		}
 		return encontrado;
 	}
@@ -49,7 +49,7 @@ public class ArbolNario{
 		if (raiz == null) {
 			return 0;
 		}else{
-			for (int i = 0; i<raiz.getHijos() ; i++) {
+			for (int i = 0; i<raiz.getNoHijos() ; i++) {
 				mayor += cantidadNodos(raiz.hijos.get(i));
 			}
 			return mayor+1;
@@ -61,7 +61,7 @@ public class ArbolNario{
 		if (raiz == null) {
 			return 0;
 		}else{
-			for (int i = 0; i<raiz.getHijos() ; i++) {
+			for (int i = 0; i<raiz.getNoHijos() ; i++) {
 				tempo = altura(raiz.hijos.get(i));
 				if (tempo > mayor) {
 					mayor = tempo;
@@ -75,7 +75,7 @@ public class ArbolNario{
 		if (raiz == null) {
 			return 0;
 		}else{
-			for (int i = 0; i < raiz.getHijos() ; i++) {
+			for (int i = 0; i < raiz.getNoHijos() ; i++) {
 				nivel += altura2(raiz.hijos.get(i));
 				if (i == 0) {
 					nivel ++;
@@ -88,7 +88,7 @@ public class ArbolNario{
 		if (raiz == null) {
 			return 0;
 		}else{
-			for (int i = 0; i<raiz.getHijos() ; i++) {
+			for (int i = 0; i<raiz.getNoHijos() ; i++) {
 				nivel = altura3(raiz.hijos.get(i),nivel);
 				if (i == 0) {
 					nivel++;
@@ -99,10 +99,10 @@ public class ArbolNario{
 	}
 	public int numeroHojas(Nodo raiz){
 		int asum = 0;
-		if (raiz.getHijos() == 0) {
+		if (raiz.getNoHijos() == 0) {
 			return 1;
 		}else{
-			for (int i = 0; i<raiz.getHijos() ; i++) {
+			for (int i = 0; i<raiz.getNoHijos() ; i++) {
 				asum += numeroHojas(raiz.hijos.get(i));
 			}
 			return asum;
@@ -112,11 +112,11 @@ public class ArbolNario{
 		int tempo = 0;
 		if (raiz == null) {
 			return -1;
-		}else if (raiz.getDato().equals(elemento)) {
+		}else if (raiz.getId().equals(elemento)) {
 			return nivel;
 		}else{
 			//Se busca en los hijos
-			for (int i = 0; i<raiz.getHijos() ; i++ ) {
+			for (int i = 0; i<raiz.getNoHijos() ; i++ ) {
 				tempo = nivelElemento(raiz.hijos.get(i),elemento,nivel+1);
 				if (tempo != -1) {
 					return tempo;
@@ -127,14 +127,14 @@ public class ArbolNario{
 	}
 	public void borrarNodo(Nodo raiz,String borrar, boolean rama){
 		//Para poder borrar primero buscamos que exista el nodo que se pretende borrar
-		for (int i = 0; i<raiz.getHijos() ; i++ ) {
+		for (int i = 0; i<raiz.getNoHijos() ; i++ ) {
 			//En caso de que se quiera borrar con todo y la rama
-			if (raiz.hijos.get(i).getDato().equals(borrar)&&raiz.hijos.get(i).getHijos() != 0 && rama) {
+			if (raiz.hijos.get(i).getId().equals(borrar)&&raiz.hijos.get(i).getNoHijos() != 0 && rama) {
 				raiz.hijos.remove(i);
 				raiz.actualizarNoHijos();
 				break;
 			//En caso contrario se verifica que el nodo no tenga hijos
-			}else if (raiz.hijos.get(i).getDato().equals(borrar)&&raiz.hijos.get(i).getHijos() == 0) {
+			}else if (raiz.hijos.get(i).getId().equals(borrar)&&raiz.hijos.get(i).getNoHijos() == 0) {
 				raiz.hijos.remove(i);
 				raiz.actualizarNoHijos();
 				break;
@@ -145,13 +145,17 @@ public class ArbolNario{
 }
 class Nodo{
 		//Atributos
-		String dato;
+		String id;
+		int coorX;
+		int coorY;
 		int cantidadHijos;
 		ArrayList <Nodo> hijos;
-		//Constructor
-		public Nodo(String dato){
+		//Constructores
+		public Nodo(String id,int x,int y){
 			hijos = new ArrayList<Nodo>();
-			this.dato = dato;
+			this.id = id;
+			this.coorX = x;
+			this.coorY = y;
 			this.cantidadHijos = 0;
 		}
 		//Metodos
@@ -163,18 +167,28 @@ class Nodo{
 			cantidadHijos = hijos.size();
 		}
 		public void verInfo(){
-			System.out.println("{ "+dato+" }");
+			System.out.println("{ "+id+" }");
 		}
 		public void verHijos(){
 			System.out.println(cantidadHijos);
 		}
-		public void setDato(String dato){
-			this.dato = dato;
+		public void setid(String id){
+			this.id = id;
 		}
-		public String getDato(){
-			return dato;
+		public String getId(){
+			return id;
 		}
-		public int getHijos(){
+		public void setCoords(int x,int y){
+			this.coorX = x;
+			this.coorY = y;
+		}
+		public int getX(){
+			return coorX;
+		}
+		public int getY(){
+			return coorY;
+		}
+		public int getNoHijos(){
 			return cantidadHijos;
 		}
 		public void restarHijos(){
