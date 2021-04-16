@@ -3,32 +3,20 @@
 ** con sus caracteristicas
 */
 
-import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import java.awt.Color;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Personaje extends JPanel{
 	//Atributos de la clase
 	Laberinto lab = new Laberinto();
-	private int x = 40;
-	private int y = 40;
-	private final int ancho = 40;
-	private final int alto = 40;
-	private final int movimiento = 40;
+	public int x = 40;
+	public int y = 40;
+	public final int ancho = 40;
+	public final int alto = 40;
+	public final int movimiento = 40;
 	Node e = new Node(1,1);
 	listaDoble visitados = new listaDoble(e);
-	ArbolNario ObjArbol = new ArbolNario();
-	Nodo raiz = ObjArbol.insertarRaiz("0",x/40,y/40);
 	//Metodos de la clase
-	@Override
-	public void paint(Graphics grafico){
-		grafico.setColor(Color.red);
-		grafico.fillOval(x,y,ancho,alto);
-		grafico.setColor(Color.black);
-		grafico.drawOval(x,y,ancho,alto);
-	}
 	public void teclaPresionada(KeyEvent evento){
 		int laberinto[][] = lab.obtieneLaberinto();
 		//Tecla izquierda

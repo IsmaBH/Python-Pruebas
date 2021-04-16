@@ -8,11 +8,12 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.util.Scanner;
 
 public class Juego extends JPanel{
 	//Atributos de la clase
 	Laberinto laberinto = new Laberinto();
-	Personaje personaje = new Personaje();
+	Personaje personaje;
 	//Constructor de la clase
 	public Juego(){
 		addKeyListener(new KeyListener(){
@@ -34,9 +35,29 @@ public class Juego extends JPanel{
 		laberinto.paint(grafico);
 		personaje.paint(grafico);
 	}
+	public void setPersonaje(String opcion){
+		switch(opcion){
+			case "1":
+				personaje = new Humano();
+				break;
+			case "2":
+				personaje = new Mono();
+				break;
+			case "3":
+				personaje = new Pulpo();
+				break;
+			default:
+				personaje = new Humano();
+		}
+	}
 	public static void main(String[] args){
+		String personajeSeleccionado;
+		System.out.println("Personajes disponibles: 1.- Humano, 2.- Mono, 3.- Pulpo");
+		Scanner opcion = new Scanner(System.in);
+		personajeSeleccionado = opcion.nextLine();
 		JFrame miventana = new JFrame("Mi laberinto");
 		Juego game = new Juego();
+		game.setPersonaje(personajeSeleccionado);
 		miventana.add(game);
 		miventana.setSize(920,540);
 		miventana.setLocation(300,200);
