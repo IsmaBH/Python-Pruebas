@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class Juego extends JPanel{
 	//Atributos de la clase
 	Laberinto laberinto = new Laberinto();
-	Personaje personaje;
+	Personaje personaje = new Personaje();
 	//Constructor de la clase
 	public Juego(){
 		addKeyListener(new KeyListener(){
@@ -38,16 +38,17 @@ public class Juego extends JPanel{
 	public void setPersonaje(String opcion){
 		switch(opcion){
 			case "1":
-				personaje = new Humano();
+				personaje.setRaza(opcion);
 				break;
 			case "2":
-				personaje = new Mono();
+				personaje.setRaza(opcion);
 				break;
 			case "3":
-				personaje = new Pulpo();
+				personaje.setRaza(opcion);
 				break;
 			default:
-				personaje = new Humano();
+				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
+				System.exit(0);
 		}
 	}
 	public static void main(String[] args){

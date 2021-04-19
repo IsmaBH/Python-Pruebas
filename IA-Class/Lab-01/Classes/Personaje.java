@@ -2,20 +2,44 @@
 ** CLase donde se implementa al jugador
 ** con sus caracteristicas
 */
-
+import java.util.ArrayList;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.Color;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 
 public class Personaje extends JPanel{
 	//Atributos de la clase
+	ArrayList<Coordenada> visitados = new ArrayList<Coordenada>();
+	ArrayList<Coordenada> visibilidad = new ArrayList<Coordenada>();
 	Laberinto lab = new Laberinto();
-	public int x = 40;
-	public int y = 40;
-	public final int ancho = 40;
-	public final int alto = 40;
-	public final int movimiento = 40;
-	Node e = new Node(1,1);
-	listaDoble visitados = new listaDoble(e);
+	private String raza;
+	private int x = 40;
+	private int y = 40;
+	private final int ancho = 40;
+	private final int alto = 40;
+	private final int movimiento = 40;
+	Coordenada inicial = new Coordenada(x/40,y/40);
+	//Metodo paint para mostrar en pantalla
+	@Override
+	public void paint(Graphics grafico){
+		if (raza == "Humano") {
+			grafico.setColor(Color.red);	
+		}else if (raza == "Mono") {
+			grafico.setColor(Color.cyan);
+		}else if (raza == "pulpo") {
+			grafico.setColor(Color.magenta);
+		}
+		grafico.fillOval(x,y,ancho,alto);
+		grafico.setColor(Color.black);
+		grafico.drawOval(x,y,ancho,alto);
+		if (!esVisitado(x/40,y/40)) {
+			visitados.add(inicial);
+		}
+	}
 	//Metodos de la clase
 	public void teclaPresionada(KeyEvent evento){
 		int laberinto[][] = lab.obtieneLaberinto();
@@ -24,8 +48,8 @@ public class Personaje extends JPanel{
 			if(laberinto[y/40][(x/40)-1] != 0){
 				x = x - movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
-				if (!visitados.find(x/40,y/40)) {
-					visitados.addLast((x/40),(y/40));
+				if (!esVisitado(x/40,y/40)) {
+					visitados.add(new Coordenada(x/40,y/40));
 				}
 			}
 		}
@@ -34,8 +58,8 @@ public class Personaje extends JPanel{
 			if(laberinto[y/40][(x/40)+1] != 0){
 				x = x + movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
-				if (!visitados.find(x/40,y/40)) {
-					visitados.addLast((x/40),(y/40));
+				if (!esVisitado(x/40,y/40)) {
+					visitados.add(new Coordenada(x/40,y/40));
 				}
 			}
 		}
@@ -44,8 +68,8 @@ public class Personaje extends JPanel{
 			if(laberinto[(y/40)+1][x/40] != 0){
 				y = y + movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
-				if (!visitados.find(x/40,y/40)) {
-					visitados.addLast((x/40),(y/40));
+				if (!esVisitado(x/40,y/40)) {
+					visitados.add(new Coordenada(x/40,y/40));
 				}
 			}
 		}
@@ -54,8 +78,8 @@ public class Personaje extends JPanel{
 			if(laberinto[(y/40)-1][x/40] != 0){
 				y = y - movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
-				if (!visitados.find(x/40,y/40)) {
-					visitados.addLast((x/40),(y/40));
+				if (!esVisitado(x/40,y/40)) {
+					visitados.add(new Coordenada(x/40,y/40));
 				}
 			}
 		}
@@ -64,16 +88,16 @@ public class Personaje extends JPanel{
 	public void sensores(int x,int y){
 		int laberinto[][] = lab.obtieneLaberinto();
 		int caminos = 0;
-		if (laberinto[y/40][(x/40)-1] != 0 && !visitados.find((x/40)-1,y/40)) {
+		if (laberinto[y/40][(x/40)-1] != 0 && !esVisitado((x/40)-1,y/40)) {
 			caminos++;
 		}
-		if (laberinto[y/40][(x/40)+1] != 0 && !visitados.find((x/40)+1,y/40)) {
+		if (laberinto[y/40][(x/40)+1] != 0 && !esVisitado((x/40)+1,y/40)) {
 			caminos++;
 		}
-		if (laberinto[(y/40)+1][x/40] != 0 && !visitados.find(x/40,(y/40)+1)) {
+		if (laberinto[(y/40)+1][x/40] != 0 && !esVisitado(x/40,(y/40)+1)) {
 			caminos++;
 		}
-		if (laberinto[(y/40)-1][x/40] != 0 && !visitados.find(x/40,(y/40)-1)) {
+		if (laberinto[(y/40)-1][x/40] != 0 && !esVisitado(x/40,(y/40)-1)) {
 			caminos++;
 		}
 		if (caminos > 1) {
@@ -99,6 +123,33 @@ public class Personaje extends JPanel{
 		}
 		if (valor == 4) {
 			System.out.println("LLegaste a la meta!!");
+		}
+	}
+	//Metodo para buscar en el array un objeto
+	public boolean esVisitado(int x,int y){
+		boolean existe = false;
+		for (int i = 0; i < visitados.size() ; i++ ) {
+			if (visitados.get(i).getX() == x && visitados.get(i).getY() == y) {
+				existe = true;
+				break;
+			}
+		}
+		return existe;
+	}
+	public void setRaza(String opcion){
+		switch(opcion){
+			case "1":
+				this.raza = "Humano";
+				break;
+			case "2":
+				this.raza = "Mono";
+				break;
+			case "3":
+				this.raza = "Pulpo";
+				break;
+			default:
+				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
+				System.exit(0);
 		}
 	}
 }
