@@ -135,11 +135,18 @@ public class Personaje extends JPanel{
 			sensores(x,y);
 		}
 		if (valor == 3) {
+			sensores(x,y);
 			System.out.print("Agua: ");
 			System.out.println(x+","+y);
 		}
 		if (valor == 4) {
+			sensores(x,y);
 			System.out.print("Arena: ");
+			System.out.println(x+","+y);
+		}
+		if (valor == 5) {
+			sensores(x,y);
+			System.out.println("Bosque");
 			System.out.println(x+","+y);
 		}
 		if (valor == 8) {
