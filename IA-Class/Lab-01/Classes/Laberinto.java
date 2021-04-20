@@ -4,6 +4,7 @@
 ** Caracteristicas y tipos de areas segun un codigo dado
 */
 
+import java.util.ArrayList;
 import java.awt.Graphics;
 import java.awt.Color;
 import javax.swing.JFrame;
@@ -22,42 +23,77 @@ public class Laberinto extends JPanel{
 	private final int anchoBloque = 40;
 	private final int altoBloque = 40;
 	//Metodos de la clase
-	@Override
-	public void paint(Graphics grafico){
+	//@Override
+	public void paint(Graphics grafico,Personaje p1){
 		int [][]laberinto = obtieneLaberinto();
 		for(fila = 0;fila<numeroFilas;fila++){
 			for(columna = 0;columna<numeroColumnas;columna++){
-				//Codigo 0 es una pared/montaña
-				if(laberinto[fila][columna] == 0){
-					grafico.setColor(Color.gray);
-					grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+				if (p1.esVisitado(columna,fila) || p1.esVisible(columna,fila)) {
+					//Codigo 0 es unlimite del mapa
+					if(laberinto[fila][columna] == 0){
+						grafico.setColor(Color.black);
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+					//Codigo 1 es una pared o montaña
+					if (laberinto[fila][columna] == 1) {
+						grafico.setColor(Color.gray);
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+					//Codigo 2 es tierra/camino
+					if (laberinto[fila][columna] == 2) {
+						grafico.setColor(Color.yellow.darker());
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+					//Codigo 3 es agua
+					if (laberinto[fila][columna] == 3) {
+						grafico.setColor(Color.blue);
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+					//Codigo 4 es la arena
+					if (laberinto[fila][columna] == 4) {
+						grafico.setColor(Color.yellow);
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+					//Codigo 5 es bosque (Color.green)
+					if (laberinto[fila][columna] == 5) {
+						grafico.setColor(Color.green);
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+					//Codigo 6 es pantano (Color(200,85,224))
+					if (laberinto[fila][columna] == 6) {
+						grafico.setColor(Color.magenta.darker());
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+					//Codigo 7 es nieve (Color.white)
+					if (laberinto[fila][columna] == 7) {
+						grafico.setColor(Color.white);
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+					//Codigo 8 es objetivo (Color.red)
+					if (laberinto[fila][columna] == 8) {
+						grafico.setColor(Color.red);
+						grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
+						grafico.setColor(Color.black);
+						grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
+					}
+				}else{
 					grafico.setColor(Color.black);
-					grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
-				}
-				//Codigo 1 es camino
-				if (laberinto[fila][columna] == 1) {
-					grafico.setColor(Color.white);
-					grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
-					grafico.setColor(Color.black);
-					grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
-				}
-				//Codigo 2 es agua
-				if (laberinto[fila][columna] == 2) {
-					grafico.setColor(Color.blue);
-					grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
-					grafico.setColor(Color.black);
-					grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
-				}
-				//Codigo 3 es arena
-				if (laberinto[fila][columna] == 3) {
-					grafico.setColor(Color.yellow);
-					grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
-					grafico.setColor(Color.black);
-					grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);
-				}
-				//Codigo 4 es la meta/bosque
-				if (laberinto[fila][columna] == 4) {
-					grafico.setColor(Color.green);
 					grafico.fillRect(columna*40,fila*40,anchoBloque,altoBloque);
 					grafico.setColor(Color.black);
 					grafico.drawRect(columna*40,fila*40,anchoBloque,altoBloque);

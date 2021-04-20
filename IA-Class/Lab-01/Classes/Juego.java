@@ -32,7 +32,7 @@ public class Juego extends JPanel{
 	@Override
 	public void paint(Graphics grafico){
 		//Empieza el metodo que nos permitira dibujar el laberinto
-		laberinto.paint(grafico);
+		laberinto.paint(grafico,personaje);
 		personaje.paint(grafico);
 	}
 	public void setPersonaje(String opcion){
@@ -60,7 +60,7 @@ public class Juego extends JPanel{
 		Juego game = new Juego();
 		game.setPersonaje(personajeSeleccionado);
 		miventana.add(game);
-		miventana.setSize(920,540);
+		miventana.setSize(920,720);
 		miventana.setLocation(300,200);
 		miventana.setVisible(true);
 		miventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

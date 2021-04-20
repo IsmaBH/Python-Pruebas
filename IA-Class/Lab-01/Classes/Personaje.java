@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 public class Personaje extends JPanel{
 	//Atributos de la clase
 	ArrayList<Coordenada> visitados = new ArrayList<Coordenada>();
-	ArrayList<Coordenada> visibilidad = new ArrayList<Coordenada>();
+	ArrayList<Coordenada> vision = new ArrayList<Coordenada>();
 	Laberinto lab = new Laberinto();
 	private String raza;
 	private int x = 40;
@@ -30,7 +30,7 @@ public class Personaje extends JPanel{
 			grafico.setColor(Color.red);	
 		}else if (raza == "Mono") {
 			grafico.setColor(Color.cyan);
-		}else if (raza == "pulpo") {
+		}else if (raza == "Pulpo") {
 			grafico.setColor(Color.magenta);
 		}
 		grafico.fillOval(x,y,ancho,alto);
@@ -45,7 +45,7 @@ public class Personaje extends JPanel{
 		int laberinto[][] = lab.obtieneLaberinto();
 		//Tecla izquierda
 		if(evento.getKeyCode() == 37){
-			if(laberinto[y/40][(x/40)-1] != 0){
+			if(laberinto[y/40][(x/40)-1] != 0 && laberinto[y/40][(x/40)-1] != 1){
 				x = x - movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
 				if (!esVisitado(x/40,y/40)) {
@@ -55,7 +55,7 @@ public class Personaje extends JPanel{
 		}
 		//Tecla derecha
 		if(evento.getKeyCode() == 39){
-			if(laberinto[y/40][(x/40)+1] != 0){
+			if(laberinto[y/40][(x/40)+1] != 0 && laberinto[y/40][(x/40)+1] != 1){
 				x = x + movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
 				if (!esVisitado(x/40,y/40)) {
@@ -65,7 +65,7 @@ public class Personaje extends JPanel{
 		}
 		//Tecla abajo
 		if(evento.getKeyCode() == 40){
-			if(laberinto[(y/40)+1][x/40] != 0){
+			if(laberinto[(y/40)+1][x/40] != 0 && laberinto[(y/40)+1][x/40] != 1){
 				y = y + movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
 				if (!esVisitado(x/40,y/40)) {
@@ -75,7 +75,7 @@ public class Personaje extends JPanel{
 		}
 		//Tecla arriba
 		if(evento.getKeyCode() == 38){
-			if(laberinto[(y/40)-1][x/40] != 0){
+			if(laberinto[(y/40)-1][x/40] != 0 && laberinto[(y/40)-1][x/40] != 1){
 				y = y - movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
 				if (!esVisitado(x/40,y/40)) {
@@ -88,18 +88,39 @@ public class Personaje extends JPanel{
 	public void sensores(int x,int y){
 		int laberinto[][] = lab.obtieneLaberinto();
 		int caminos = 0;
-		if (laberinto[y/40][(x/40)-1] != 0 && !esVisitado((x/40)-1,y/40)) {
+		vision.clear();
+		//Izquierda
+		vision.add(new Coordenada((x/40)-1,y/40));
+		if (esOcupable(laberinto[y/40][(x/40)-1]) && !esVisitado((x/40)-1,y/40)) {
 			caminos++;
+		}else{
+			visitados.add(new Coordenada((x/40)-1,y/40));
 		}
-		if (laberinto[y/40][(x/40)+1] != 0 && !esVisitado((x/40)+1,y/40)) {
+		//Derecha
+		vision.add(new Coordenada((x/40)+1,y/40));
+		if (esOcupable(laberinto[y/40][(x/40)+1]) && !esVisitado((x/40)+1,y/40)) {
 			caminos++;
+		}else{
+			visitados.add(new Coordenada((x/40)+1,y/40));
 		}
-		if (laberinto[(y/40)+1][x/40] != 0 && !esVisitado(x/40,(y/40)+1)) {
+		//Abajo
+		vision.add(new Coordenada(x/40,(y/40)+1));
+		if (esOcupable(laberinto[(y/40)+1][x/40]) && !esVisitado(x/40,(y/40)+1)) {
 			caminos++;
+		}else{
+			visitados.add(new Coordenada(x/40,(y/40)+1));
+		}
+		//Arriba
+		vision.add(new Coordenada(x/40,(y/40)-1));
+		if (esOcupable(laberinto[(y/40)-1][x/40]) && !esVisitado(x/40,(y/40)-1)) {
+			caminos++;
+		}else{
+			visitados.add(new Coordenada(x/40,(y/40)-1));
 		}
 		if (laberinto[(y/40)-1][x/40] != 0 && !esVisitado(x/40,(y/40)-1)) {
 			caminos++;
 		}
+		//Resultados
 		if (caminos > 1) {
 			System.out.println("Soy una decisión con "+caminos+" caminos");
 		}else if(caminos == 1){
@@ -110,18 +131,18 @@ public class Personaje extends JPanel{
 	}
 	public void posicionActual(int valor,int x,int y){
 		int laberinto[][] = lab.obtieneLaberinto();
-		if (valor == 1) {
+		if (valor == 2) {
 			sensores(x,y);
 		}
-		if (valor == 2) {
+		if (valor == 3) {
 			System.out.print("Agua: ");
 			System.out.println(x+","+y);
 		}
-		if (valor == 3) {
+		if (valor == 4) {
 			System.out.print("Arena: ");
 			System.out.println(x+","+y);
 		}
-		if (valor == 4) {
+		if (valor == 8) {
 			System.out.println("LLegaste a la meta!!");
 		}
 	}
@@ -135,6 +156,17 @@ public class Personaje extends JPanel{
 			}
 		}
 		return existe;
+	}
+	//Metodo para saber si esta en el campo de vision una posicion
+	public boolean esVisible(int x,int y){
+		boolean visible = false;
+		for (int i = 0; i < vision.size() ; i++ ) {
+			if (vision.get(i).getX() == x && vision.get(i).getY() == y) {
+				visible = true;
+				break;
+			}
+		}
+		return visible;
 	}
 	public void setRaza(String opcion){
 		switch(opcion){
@@ -151,5 +183,52 @@ public class Personaje extends JPanel{
 				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
 				System.exit(0);
 		}
+	}
+	public boolean esOcupable(int valor){
+		boolean ocupar = false;
+		switch(valor){
+			//Valor = 1 para la pared/montaña
+			case 1:
+				if (this.raza == "Sasquatch") {
+					ocupar = true;
+				}
+				break;
+			//Valor = 2 para la tierra/camino
+			case 2:
+				ocupar = true;
+				break;
+			//Valor = 3 para el agua
+			case 3:
+				if (this.raza != "Sasquatch") {
+					ocupar = true;
+				}
+				break;
+			//Valor = 4 para la arena
+			case 4:
+				if (this.raza != "Sasquatch" && this.raza != "Pulpo") {
+					ocupar = true;
+				}
+				break;
+			//Valor = 5 para el bosque
+			case 5:
+				ocupar = true;
+			//Valor = 6 para el pantano
+			case 6:
+				ocupar = true;
+			//Valor = 7 para la nieve
+			case 7:
+				if (this.raza != "Mono" && this.raza != "Pulpo") {
+					ocupar = true;
+				}
+			//Valor = 8 para objetivo
+			case 8:
+				if (this.raza != "Sasquatch") {
+					ocupar = true;
+				}
+			//Default se esta usando para los limites del mapa
+			default:
+				ocupar = false;
+		}
+		return ocupar;
 	}
 }
