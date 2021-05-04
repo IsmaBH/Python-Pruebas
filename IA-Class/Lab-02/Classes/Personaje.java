@@ -4,7 +4,6 @@
 */
 import java.util.ArrayList;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -16,6 +15,7 @@ public class Personaje extends JPanel{
 	ArrayList<Coordenada> visitados = new ArrayList<Coordenada>();
 	ArrayList<Coordenada> vision = new ArrayList<Coordenada>();
 	Laberinto lab = new Laberinto();
+	Algoritmo algortimo;
 	private String raza;
 	private int x = 80;
 	private int y = 80;
@@ -41,6 +41,9 @@ public class Personaje extends JPanel{
 		}
 	}
 	//Metodos de la clase
+	public void ejecutaAlgoritmo(){
+		//Aqui se llevara acabo la ejecucion del algoritmo dado al personaje
+	}
 	public void teclaPresionada(KeyEvent evento){
 		int laberinto[][] = lab.obtieneLaberinto();
 		//Tecla izquierda
@@ -185,6 +188,22 @@ public class Personaje extends JPanel{
 				break;
 			case "3":
 				this.raza = "Pulpo";
+				break;
+			default:
+				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
+				System.exit(0);
+		}
+	}
+	public void setAlgoritmo(String opcion){
+		switch(opcion){
+			case "1":
+				this.algortimo = new Anchura("Anchura");
+				break;
+			case "2":
+				this.algortimo = new Profundidad("Profundidad");
+				break;
+			case "3":
+				this.algortimo = new Aestrella("Aestrella");
 				break;
 			default:
 				System.out.println("No haz escogido ningun tipo,intenta nuevamente");

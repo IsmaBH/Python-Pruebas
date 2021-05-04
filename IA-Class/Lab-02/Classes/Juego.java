@@ -16,17 +16,7 @@ public class Juego extends JPanel{
 	Personaje personaje = new Personaje();
 	//Constructor de la clase
 	public Juego(){
-		addKeyListener(new KeyListener(){
-			@Override
-			public void keyTyped(KeyEvent e){}
-			@Override
-			public void keyPressed(KeyEvent e){
-				personaje.teclaPresionada(e);
-			}
-			@Override
-			public void keyReleased(KeyEvent e){}
-		});
-		setFocusable(true);
+		personaje.ejecutaAlgoritmo();
 	}
 	//Metodos de la clase
 	@Override
@@ -36,34 +26,33 @@ public class Juego extends JPanel{
 		personaje.paint(grafico);
 	}
 	public void setPersonaje(String opcion){
-		switch(opcion){
-			case "1":
-				personaje.setRaza(opcion);
-				break;
-			case "2":
-				personaje.setRaza(opcion);
-				break;
-			case "3":
-				personaje.setRaza(opcion);
-				break;
-			default:
-				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
-				System.exit(0);
-		}
+		personaje.setRaza(opcion);
+	}
+	public void sAlgoritmo(String opcion){
+		personaje.setAlgoritmo(opcion);
 	}
 	public static void main(String[] args){
+		//Variables para guardar las opciones de jugador
 		String personajeSeleccionado;
+		String algoritmoSeleccionado;
+		//Modo de obtencion de los datos por consola
 		System.out.println("Personajes disponibles: 1.- Humano, 2.- Mono, 3.- Pulpo");
 		Scanner opcion = new Scanner(System.in);
 		personajeSeleccionado = opcion.nextLine();
+		System.out.println("Algoritmos disponibles: 1.- Anchura, 2.- Profundidad, 3.- A*");
+		Scanner opAl = new Scanner(System.in);
+		algoritmoSeleccionado = opAl.nextLine();
+		//Creacion de la ventana de juego
 		JFrame miventana = new JFrame("Mi laberinto");
 		Juego game = new Juego();
 		game.setPersonaje(personajeSeleccionado);
+		game.sAlgoritmo(algoritmoSeleccionado);
 		miventana.add(game);
 		miventana.setSize(920,720);
 		miventana.setLocation(300,200);
 		miventana.setVisible(true);
 		miventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//Bucle de juego para actualizar la pantalla
 		while(true){
 			try{
 				Thread.sleep(10);
