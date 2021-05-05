@@ -6,8 +6,7 @@ abstract class Algoritmo{
 	//Atributos de la clase
 	private String nombre;
 	//Metodos abstractos de la clase
-	abstract public void Accion();
-	abstract public void verificaReglas();
+	abstract public void verificaReglas(Coordenada actual,String tipo);
 	//Constructor
 	public Algoritmo(String nom){
 		this.nombre = nom;
