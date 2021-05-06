@@ -15,7 +15,7 @@ public class Personaje extends JPanel{
 	ArrayList<Coordenada> visitados = new ArrayList<Coordenada>();
 	ArrayList<Coordenada> vision = new ArrayList<Coordenada>();
 	Laberinto lab = new Laberinto();
-	Algoritmo algortimo;
+	Algoritmo algoritmo;
 	private String raza;
 	private int x = 80;
 	private int y = 80;
@@ -38,54 +38,77 @@ public class Personaje extends JPanel{
 		grafico.drawOval(x,y,ancho,alto);
 		if (!esVisitado(x/40,y/40)) {
 			visitados.add(inicial);
+			algoritmo.setPrioridad();
+			algoritmo.insertaInicial(inicial);
 		}
 	}
 	//Metodos de la clase
 	public void ejecutaAlgoritmo(){
-		//Aqui se llevara acabo la ejecucion del algoritmo dado al personaje
+		//El primer paso es obtener la direccion a la que se movera el agente
+		int evento = algoritmo.obtenerDireccion(0);
+		//El segundo paso sera intentar mover a la direccion deseada
+		boolean mover = teclaPresionada(evento);
+		//Si no se puede mover a la direccion deseada:
+		if (mover == false) {
+			//Buscar otra direccion
+			for (int i = 1; i <= 3 ; i++ ) {
+				evento = algoritmo.obtenerDireccion(i);
+				mover = teclaPresionada(evento);
+				if (mover == true) {
+					break;
+				}
+			}
+		}
+		//Repetir
 	}
-	public void teclaPresionada(KeyEvent evento){
+	public boolean teclaPresionada(int evento){
 		int laberinto[][] = lab.obtieneLaberinto();
+		boolean mover = false;
 		//Tecla izquierda
-		if(evento.getKeyCode() == 37){
+		if(evento == 37){
 			if(laberinto[y/40][(x/40)-1] != 0 && laberinto[y/40][(x/40)-1] != 1){
 				x = x - movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
+				mover = true;
 				if (!esVisitado(x/40,y/40)) {
 					visitados.add(new Coordenada(x/40,y/40));
 				}
 			}
 		}
 		//Tecla derecha
-		if(evento.getKeyCode() == 39){
+		if(evento == 39){
 			if(laberinto[y/40][(x/40)+1] != 0 && laberinto[y/40][(x/40)+1] != 1){
 				x = x + movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
+				mover = true;
 				if (!esVisitado(x/40,y/40)) {
 					visitados.add(new Coordenada(x/40,y/40));
 				}
 			}
 		}
 		//Tecla abajo
-		if(evento.getKeyCode() == 40){
+		if(evento == 40){
 			if(laberinto[(y/40)+1][x/40] != 0 && laberinto[(y/40)+1][x/40] != 1){
 				y = y + movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
+				mover = true;
 				if (!esVisitado(x/40,y/40)) {
 					visitados.add(new Coordenada(x/40,y/40));
 				}
 			}
 		}
 		//Tecla arriba
-		if(evento.getKeyCode() == 38){
+		if(evento == 38){
 			if(laberinto[(y/40)-1][x/40] != 0 && laberinto[(y/40)-1][x/40] != 1){
 				y = y - movimiento;
 				posicionActual(laberinto[y/40][x/40],x,y);
+				mover = true;
 				if (!esVisitado(x/40,y/40)) {
 					visitados.add(new Coordenada(x/40,y/40));
 				}
 			}
 		}
+		return mover;
 	}
 	//Metodo Auxiliar para la verificacion de las casillas(sensores)
 	public void sensores(int x,int y){
@@ -154,6 +177,7 @@ public class Personaje extends JPanel{
 		}
 		if (valor == 8) {
 			System.out.println("LLegaste a la meta!!");
+			System.exit(0);
 		}
 	}
 	//Metodo para buscar en el array un objeto
@@ -197,13 +221,13 @@ public class Personaje extends JPanel{
 	public void setAlgoritmo(String opcion){
 		switch(opcion){
 			case "1":
-				this.algortimo = new Anchura("Anchura");
+				//this.algoritmo = new Anchura("Anchura");
 				break;
 			case "2":
-				this.algortimo = new Profundidad("Profundidad");
+				this.algoritmo = new Profundidad();
 				break;
 			case "3":
-				this.algortimo = new Aestrella("Aestrella");
+				//this.algoritmo = new Aestrella("Aestrella");
 				break;
 			default:
 				System.out.println("No haz escogido ningun tipo,intenta nuevamente");

@@ -11,11 +11,12 @@ public class mainarbol{
 	ObjArbol.insertarNodo(raiz,new Coordenada(1,3),new Coordenada(1,2));
 	ObjArbol.insertarNodo(raiz,new Coordenada(2,1),new Coordenada(2,2));
 	ObjArbol.insertarNodo(raiz,new Coordenada(3,4),new Coordenada(3,2));
-	/*ObjArbol.insertarNodo(raiz,"3.1.1","3.1");
-	ObjArbol.insertarNodo(raiz,"3.1.1.4","3.1.1");
-	ObjArbol.insertarNodo(raiz,"1.1.1","1.1");
-	ObjArbol.insertarNodo(raiz,"1.1.1.2","1.1.1");*/
-	ObjArbol.recorrer(raiz);
+	ObjArbol.insertarNodo(raiz,new Coordenada(3,8),new Coordenada(3,2));
+	ObjArbol.insertarNodo(raiz,new Coordenada(4,8),new Coordenada(3,8));
+	ObjArbol.insertarNodo(raiz,new Coordenada(1,5),new Coordenada(1,2));
+	ObjArbol.insertarNodo(raiz,new Coordenada(2,5),new Coordenada(1,5));
+	//ObjArbol.recorrer(raiz);
+	ObjArbol.recorrerHijosRaiz(raiz);
 	/*System.out.println("Buscar "+ObjArbol.buscar(raiz,"2",false));
 	System.out.println("Cantidad: "+ObjArbol.cantidadNodos(raiz));
 	System.out.println("Altura: "+ObjArbol.altura(raiz));

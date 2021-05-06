@@ -2,38 +2,50 @@
 Clase que implementa la clase abstracta Algoritmo y en especifico se dedica
 al metodo de busqueda por profundidad
 */
-import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+
 public class Profundidad extends Algoritmo{
 	//Atributos
+	private ArrayList<Integer> prioridad = new ArrayList<Integer>();
 	private ArbolNario decisiones = new ArbolNario();
+	private Nodo raiz;
 	//Constructor(Se invoca el constructor de la clase base)
 	public Profundidad(){
 		super("Profundidad");
 	}
-	//Metodos (De la clase y los abstractos de la clase base)
-	public void insertaInicial(Coordenada inicial){
-		Nodo raiz = decisiones.insertarRaiz(inicial)
+	//Metodos 
+	public void setPrioridad(){
+		//Arriba = 38, abajo = 40, izquierda = 37, derecha = 39
+		prioridad.add(38);
+		prioridad.add(39);
+		prioridad.add(40);
+		prioridad.add(37);
 	}
-	public KeyEvent verificaReglas(Coordenada actual,String tipo){
-		//Metodo que contiene las reglas con las que se puede mover el agente
-		KeyEvent evento = new KeyEvent();
-		//Case que verifica el tipo de casilla
-		switch(tipo){
-			case "desicion":
-				//Si es una decision primero verificamos si su posicion ya esta agregada en el arbol
-				if (decisiones.buscar(Nodo raiz,Coordenada buscar,boolean encontrado)) {
-					
-				}
+	public void insertaInicial(Coordenada inicial){
+		Nodo raiz = decisiones.insertarRaiz(inicial);
+	}
+	public int obtenerDireccion(int indice){
+		int direccion = 0;
+		switch(indice){
+			case 0:
+				direccion = prioridad.get(0);
 				break;
-			case "camino":
-				//
+			case 1:
+				direccion = prioridad.get(1);
 				break;
-			case "callejon":
-				//
+			case 2:
+				direccion = prioridad.get(2);
+				break;
+			case 3:
+				direccion = prioridad.get(3);
 				break;
 			default:
-				System.out.println("Ha ocurrido un error inesperado!!!!!!");
+				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
 				System.exit(0);
 		}
+		return direccion;
+	}
+	public void reglas(){
+		//Code
 	}
 }
