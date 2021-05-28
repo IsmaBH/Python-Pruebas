@@ -25,11 +25,12 @@ public class Personaje extends JPanel{
 	private final int alto = 40;
 	private final int movimiento = 40;
 	//Constructor de la clase
-	public Personaje(int pos_x,int pos_y,String nombre){
+	public Personaje(int pos_x,int pos_y,String nombre,String al_op){
 		this.x = pos_x;
 		this.y = pos_y;
 		this.tipo = nombre;
 		this.inicial = new Coordenada(pos_x/40,pos_y/40);
+		setAlgoritmo(al_op);
 	}
 	//Metodos de la clase (Getters)
 	public Coordenada getPosicionActual(){
@@ -47,6 +48,22 @@ public class Personaje extends JPanel{
 	}
 	public Coordenada getPosicionInicial(){
 		return this.inicial;
+	}
+	//Metodo set del algoritmo
+	public void setAlgoritmo(String opcion){
+		switch (opcion){
+			case "1":
+				algoritmo = new Profundidad("Profundidad");
+				algoritmo.setPrioridad();
+				break;
+			case "2":
+				break;
+			case "3":
+				break;
+			default: 
+				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
+				System.exit(0);
+		}
 	}
 	//Metodo paint de la clase
 	@Override
@@ -68,12 +85,39 @@ public class Personaje extends JPanel{
 	//Metodos de la clase (Acciones del agente)
 	public void ejecutaAlgoritmo(){
 		int laberinto[][] = lab.obtieneLaberinto();
-		if (laberinto[y/40][(x/40)+1] != 0 && laberinto[y/40][(x/40)+1] != 1) {
-			x = x + movimiento;
-			posicionActual(laberinto[y/40][x/40],x,y);
-			if (!esVisitado(x/40,y/40)) {
-				visitados.add(new Coordenada(x/40,y/40));
-			}
+		int direccion = algoritmo.obtenerDireccion(laberinto,retornarPersonaje());
+		switch(direccion){
+			case 37:
+				x = x - movimiento;
+				posicionActual(laberinto[y/40][x/40],x,y);
+				if (!esVisitado(x/40,y/40)) {
+					visitados.add(new Coordenada(x/40,y/40));
+				}
+				break;
+			case 38:
+				y = y - movimiento;
+				posicionActual(laberinto[y/40][x/40],x,y);
+				if (!esVisitado(x/40,y/40)) {
+					visitados.add(new Coordenada(x/40,y/40));
+				}
+				break;
+			case 39:
+				x = x + movimiento;
+				posicionActual(laberinto[y/40][x/40],x,y);
+				if (!esVisitado(x/40,y/40)) {
+					visitados.add(new Coordenada(x/40,y/40));
+				}
+				break;
+			case 40:
+				y = y + movimiento;
+				posicionActual(laberinto[y/40][x/40],x,y);
+				if (!esVisitado(x/40,y/40)) {
+					visitados.add(new Coordenada(x/40,y/40));
+				}
+				break;
+			default:
+				System.out.println("No se encontro la salida");
+				System.exit(0);
 		}
 	}
 	//Metodos auxiliares
@@ -212,7 +256,11 @@ public class Personaje extends JPanel{
 		}else if(caminos == 1){
 			System.out.println("Soy un camino!");
 		}else if (caminos == 0) {
-			System.out.println("Soy un callejon tengo "+caminos+" disponibles");
+			System.out.println("Soy un callejon tengo "+caminos+" caminos disponibles");
 		}
+	}
+	//Metodo que retorna la informacion del personaje actual
+	public Personaje retornarPersonaje(){
+		return this;
 	}
 }

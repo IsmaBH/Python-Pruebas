@@ -15,8 +15,8 @@ public class Juego extends JPanel{
 	Laberinto laberinto = new Laberinto();
 	Personaje personaje;
 	//Constructor de la clase
-	public Juego(String opcion){
-		setPersonaje(opcion);
+	public Juego(String opcion,String opcion2){
+		setPersonaje(opcion,opcion2);
 	}
 	//Metodos de la clase
 	@Override
@@ -25,16 +25,16 @@ public class Juego extends JPanel{
 		laberinto.paint(grafico,personaje);
 		personaje.paint(grafico);
 	}
-	public void setPersonaje(String opcion){
+	public void setPersonaje(String opcion,String opcion2){
 		switch(opcion){
 			case "1":
-				personaje = new Personaje(40,40,"Humano");
+				personaje = new Personaje(40,40,"Humano",opcion2);
 				break;
 			case "2":
-				personaje = new Personaje(40,40,"Mono");
+				personaje = new Personaje(40,40,"Mono",opcion2);
 				break;
 			case "3":
-				personaje = new Personaje(40,40,"Pulpo");
+				personaje = new Personaje(40,40,"Pulpo",opcion2);
 				break;
 			default:
 				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
@@ -42,12 +42,14 @@ public class Juego extends JPanel{
 		}
 	}
 	public static void main(String[] args){
-		String personajeSeleccionado;
 		System.out.println("Personajes disponibles: 1.- Humano, 2.- Mono, 3.- Pulpo");
-		Scanner opcion = new Scanner(System.in);
-		personajeSeleccionado = opcion.nextLine();
+		Scanner opcion1 = new Scanner(System.in);
+		String personajeSeleccionado = opcion1.nextLine();
+		System.out.println("Algoritmos disponibles: 1.- Profundidad, 2.- Anchura, 3.- A*");
+		Scanner opcion2 = new Scanner(System.in);
+		String algoritmoSeleccionado = opcion2.nextLine();
 		JFrame miventana = new JFrame("Mi laberinto");
-		Juego game = new Juego(personajeSeleccionado);
+		Juego game = new Juego(personajeSeleccionado,algoritmoSeleccionado);
 		//game.setPersonaje(personajeSeleccionado);
 		miventana.add(game);
 		miventana.setSize(920,720);

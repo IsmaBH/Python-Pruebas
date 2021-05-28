@@ -15,7 +15,7 @@ public class mainarbol{
 	ObjArbol.insertarNodo(raiz,new Coordenada(4,8),new Coordenada(3,8));
 	ObjArbol.insertarNodo(raiz,new Coordenada(1,5),new Coordenada(1,2));
 	ObjArbol.insertarNodo(raiz,new Coordenada(2,5),new Coordenada(1,5));
-	//ObjArbol.recorrer(raiz);
+	ObjArbol.recorrer(raiz);
 	//ObjArbol.recorrerHijosRaiz(raiz);
 	/*System.out.println("Buscar "+ObjArbol.buscar(raiz,"2",false));
 	System.out.println("Cantidad: "+ObjArbol.cantidadNodos(raiz));
