@@ -9,6 +9,7 @@ public class Profundidad extends Algoritmo{
 	//Atributos
 	private ArbolNario decisiones = new ArbolNario();
 	private ArrayList<Integer> prioridad = new ArrayList<Integer>();
+	Nodo raiz;
 	//Constructor
 	public Profundidad(String nombre){
 		super(nombre);
@@ -16,7 +17,7 @@ public class Profundidad extends Algoritmo{
 	//Implementacion de los metodos abstractos
 	public void insertarInicial(Coordenada inicial){
 		//Metodo auxiliar que permite colocar la raiz del arbol de decisiones
-		Nodo raiz = decisiones.insertarRaiz(inicial);
+		raiz = decisiones.insertarRaiz(inicial);
 	}
 	public void setPrioridad(){
 		//Este metodo podra ser cambiado para colocar la prioridad de movimiento deseada
@@ -25,6 +26,9 @@ public class Profundidad extends Algoritmo{
 		prioridad.add(39);
 		prioridad.add(37);
 		prioridad.add(40);
+	}
+	public void verDecisiones(){
+		decisiones.recorrer(raiz);
 	}
 	public int obtenerDireccion(int[][] lab,Personaje p){
 		//Metodo que evaluara el laberinto y determinara el siguiente movimiento del agente
@@ -61,5 +65,22 @@ public class Profundidad extends Algoritmo{
 			}
 		}
 		return decision;
+	}
+	public void insertarDesiciones(Coordenada actual,int caminos){
+		if (raiz.getCoord().getX() == actual.getX() && raiz.getCoord().getY() == actual.getY() && caminos == 1) {
+			raiz.setNoHijos(caminos);
+		}else{
+			if (caminos > 1) {
+				if (!decisiones.buscar(raiz,actual,false)) {
+					Nodo padre = new Nodo();
+					padre = decisiones.buscarPadre(raiz);
+					decisiones.insertarNodo(raiz,actual,padre.getCoord());
+					decisiones.actualizarPadre(1,padre.getCoord(),raiz);
+				}
+			}
+		}
+	}
+	public Coordenada esCallejon(){
+		return decisiones.buscarPadre(raiz).getCoord();
 	}
 }

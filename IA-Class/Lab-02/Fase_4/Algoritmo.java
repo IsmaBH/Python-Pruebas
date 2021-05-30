@@ -9,7 +9,10 @@ abstract class Algoritmo{
 	//Declaracion de los metodos abstractos
 	abstract public void insertarInicial(Coordenada inicial);
 	abstract public void setPrioridad();
+	abstract public void verDecisiones();
 	abstract public int obtenerDireccion(int[][] lab,Personaje p);
+	abstract public void insertarDesiciones(Coordenada actual,int caminos);
+	abstract public Coordenada esCallejon();
 	//Constructor
 	public Algoritmo(String tipo){
 		this.nombre = tipo;

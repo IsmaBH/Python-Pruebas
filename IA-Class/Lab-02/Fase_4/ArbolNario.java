@@ -22,7 +22,9 @@ public class ArbolNario{
 			for (int i = 0; i < nodo.getNoHijos() ; i++) {
 				if (nodo.hijos.get(i).getCoord().getX() == padre.getX() && nodo.hijos.get(i).getCoord().getY() == padre.getY()) {
 					nodo.hijos.get(i).aumentarHijo(nuevo);
+					//System.out.println("Entre a buscar entre los hijos");
 				}else{
+					//System.out.println("Entre a buscar al siguiente nivel");
 					insertarNodo(nodo.hijos.get(i),pos,padre);
 				}
 			}
@@ -40,12 +42,35 @@ public class ArbolNario{
 		}
 		raiz.verInfo();
 	}
+	public Nodo buscarPadre(Nodo raiz){
+		Nodo encontrado = new Nodo();
+		for (int i = 0; i<raiz.getNoHijos() ; i++ ) {
+			encontrado = buscarPadre(raiz.hijos.get(i));
+		}
+		if (raiz.getOtro() == "Abierto") {
+			encontrado = raiz;
+		}
+		return encontrado;
+	}
+	public void actualizarPadre(int cantidad,Coordenada buscar,Nodo raiz){
+		if (raiz.getCoord().getX() == buscar.getX() && raiz.getCoord().getY() == buscar.getY()) {
+			raiz.aumentaVisitados(cantidad);
+			if (raiz.getVisitados() == raiz.getNoHijos()) {
+				raiz.setOtro("Cerrado");
+			}
+		}else{
+			for (int i = 0; i<raiz.getNoHijos() ; i++) {
+				actualizarPadre(cantidad,buscar,raiz.hijos.get(i));
+			}
+		}
+	}
 	public boolean buscar(Nodo raiz,Coordenada buscar,boolean encontrado){
 		if (raiz.getCoord().getX() == buscar.getX() && raiz.getCoord().getY() == buscar.getY()) {
 			encontrado = true;
-		}
-		for (int i = 0; i<raiz.getNoHijos() ; i++) {
-			encontrado = buscar(raiz.hijos.get(i),buscar,encontrado);
+		}else{
+			for (int i = 0; i<raiz.getNoHijos() ; i++) {
+				encontrado = buscar(raiz.hijos.get(i),buscar,encontrado);
+			}
 		}
 		return encontrado;
 	}
@@ -160,23 +185,34 @@ class Nodo{
 			hijos = new ArrayList<Nodo>();
 			this.posicion = pos;
 			this.cantidadHijos = 0;
+			this.hijosVisitados = 0;
+			this.otro = "Abierto";
+		}
+		public Nodo(){
+			this.otro = "Nodo vacio";
 		}
 		//Metodos
 		public void aumentarHijo(Nodo hijo){
 			hijos.add(hijo);
 			cantidadHijos = hijos.size();
 		}
+		public void setNoHijos(int numero){
+			cantidadHijos = numero;
+		}
 		public void actualizarNoHijos(){
 			cantidadHijos = hijos.size();
 		}
 		public void verInfo(){
-			System.out.println("("+posicion.getX()+","+posicion.getY()+")");
+			System.out.println("("+posicion.getX()+","+posicion.getY()+","+otro+")");
 		}
 		public void verHijos(){
 			System.out.println(cantidadHijos);
 		}
-		public void aumentaVisitados(){
-			hijosVisitados = hijosVisitados + 1;
+		public int getVisitados(){
+			return this.hijosVisitados;
+		}
+		public void aumentaVisitados(int cantidad){
+			hijosVisitados = hijosVisitados + cantidad;
 		}
 		public void setOtro(String others){
 			this.otro = others;

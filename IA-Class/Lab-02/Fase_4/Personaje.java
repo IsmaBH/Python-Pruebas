@@ -49,12 +49,13 @@ public class Personaje extends JPanel{
 	public Coordenada getPosicionInicial(){
 		return this.inicial;
 	}
-	//Metodo set del algoritmo
+	//Metodos set de la clase
 	public void setAlgoritmo(String opcion){
 		switch (opcion){
 			case "1":
 				algoritmo = new Profundidad("Profundidad");
 				algoritmo.setPrioridad();
+				algoritmo.insertarInicial(this.inicial);
 				break;
 			case "2":
 				break;
@@ -64,6 +65,10 @@ public class Personaje extends JPanel{
 				System.out.println("No haz escogido ningun tipo,intenta nuevamente");
 				System.exit(0);
 		}
+	}
+	public void setCoords(Coordenada objetivo){
+		this.x = objetivo.getX();
+		this.y = objetivo.getY();
 	}
 	//Metodo paint de la clase
 	@Override
@@ -79,6 +84,8 @@ public class Personaje extends JPanel{
 		grafico.setColor(Color.black);
 		grafico.drawOval(x,y,ancho,alto);
 		if (!esVisitado(x/40,y/40)) {
+			int laberinto[][] = lab.obtieneLaberinto();
+			posicionActual(laberinto[y/40][x/40],x,y);
 			visitados.add(inicial);
 		}
 	}
@@ -218,6 +225,7 @@ public class Personaje extends JPanel{
 	public void sensores(int x,int y){
 		int laberinto[][] = lab.obtieneLaberinto();
 		int caminos = 0;
+		Coordenada actual = new Coordenada(x,y);
 		vision.clear();
 		//Izquierda
 		vision.add(new Coordenada((x/40)-1,y/40));
@@ -253,10 +261,15 @@ public class Personaje extends JPanel{
 		//Resultados
 		if (caminos > 1) {
 			System.out.println("Soy una decisión con "+caminos+" caminos");
+			algoritmo.insertarDesiciones(actual,caminos);
+			algoritmo.verDecisiones();
 		}else if(caminos == 1){
 			System.out.println("Soy un camino!");
+			algoritmo.insertarDesiciones(actual,caminos);
+			//algoritmo.verDecisiones();
 		}else if (caminos == 0) {
 			System.out.println("Soy un callejon tengo "+caminos+" caminos disponibles");
+			setCoords(algoritmo.esCallejon());
 		}
 	}
 	//Metodo que retorna la informacion del personaje actual
