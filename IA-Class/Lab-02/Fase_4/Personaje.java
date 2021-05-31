@@ -91,35 +91,48 @@ public class Personaje extends JPanel{
 	}
 	//Metodos de la clase (Acciones del agente)
 	public void ejecutaAlgoritmo(){
+		int caminos = 0;
 		int laberinto[][] = lab.obtieneLaberinto();
 		int direccion = algoritmo.obtenerDireccion(laberinto,retornarPersonaje());
 		switch(direccion){
 			case 37:
 				x = x - movimiento;
-				posicionActual(laberinto[y/40][x/40],x,y);
+				caminos = posicionActual(laberinto[y/40][x/40],x,y);
 				if (!esVisitado(x/40,y/40)) {
 					visitados.add(new Coordenada(x/40,y/40));
+					if (caminos == 0) {
+						setCoords(algoritmo.esCallejon());
+					}
 				}
 				break;
 			case 38:
 				y = y - movimiento;
-				posicionActual(laberinto[y/40][x/40],x,y);
+				caminos = posicionActual(laberinto[y/40][x/40],x,y);
 				if (!esVisitado(x/40,y/40)) {
 					visitados.add(new Coordenada(x/40,y/40));
+					if (caminos == 0) {
+						setCoords(algoritmo.esCallejon());
+					}
 				}
 				break;
 			case 39:
 				x = x + movimiento;
-				posicionActual(laberinto[y/40][x/40],x,y);
+				caminos = posicionActual(laberinto[y/40][x/40],x,y);
 				if (!esVisitado(x/40,y/40)) {
 					visitados.add(new Coordenada(x/40,y/40));
+					if (caminos == 0) {
+						setCoords(algoritmo.esCallejon());
+					}
 				}
 				break;
 			case 40:
 				y = y + movimiento;
-				posicionActual(laberinto[y/40][x/40],x,y);
+				caminos = posicionActual(laberinto[y/40][x/40],x,y);
 				if (!esVisitado(x/40,y/40)) {
 					visitados.add(new Coordenada(x/40,y/40));
+					if (caminos == 0) {
+						setCoords(algoritmo.esCallejon());
+					}
 				}
 				break;
 			default:
@@ -199,30 +212,34 @@ public class Personaje extends JPanel{
 		return ocupar;
 	}
 	//Metodo que comfirma el tipo de casilla en la que esta el actor
-	public void posicionActual(int valor,int x,int y){
+	public int posicionActual(int valor,int x,int y){
+		int caminos = 0;
 		int laberinto[][] = lab.obtieneLaberinto();
 		if (valor == 2) {
 			//Suelo
-			sensores(x,y);
+			caminos = sensores(x,y);
 		}
 		if (valor == 3) {
 			//Agua
-			sensores(x,y);
+			caminos = sensores(x,y);
 		}
 		if (valor == 4) {
 			//Arena
-			sensores(x,y);
+			caminos = sensores(x,y);
 		}
 		if (valor == 5) {
 			//Bosque
-			sensores(x,y);
+			caminos = sensores(x,y);
 		}
 		if (valor == 8) {
+			caminos = sensores(x,y);
 			System.out.println("LLegaste a la meta!!");
+			System.exit(0);
 		}
+		return caminos;
 	}
 	//Metodo que determina lo que puede percibir el actor
-	public void sensores(int x,int y){
+	public int sensores(int x,int y){
 		int laberinto[][] = lab.obtieneLaberinto();
 		int caminos = 0;
 		Coordenada actual = new Coordenada(x,y);
@@ -269,8 +286,8 @@ public class Personaje extends JPanel{
 			//algoritmo.verDecisiones();
 		}else if (caminos == 0) {
 			System.out.println("Soy un callejon tengo "+caminos+" caminos disponibles");
-			setCoords(algoritmo.esCallejon());
 		}
+		return caminos;
 	}
 	//Metodo que retorna la informacion del personaje actual
 	public Personaje retornarPersonaje(){
