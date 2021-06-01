@@ -34,47 +34,38 @@ public class Profundidad extends Algoritmo{
 		//Metodo que evaluara el laberinto y determinara el siguiente movimiento del agente
 		int decision = 0;
 		for (int i = 0; i < prioridad.size() ; i++) {
-			switch(prioridad.get(i)){
-				//Izquierda
-				case 37:
-					if (lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)-1] != 0 && lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)-1] != 1 && !p.esVisitado((p.getPosicionActual().getX()/40)-1,p.getPosicionActual().getY()/40)) {
-						decision = 37;
-					}
-					break;
-				//Arriba
-				case 38:
-					if (lab[(p.getPosicionActual().getY()/40)-1][p.getPosicionActual().getX()/40] != 0 && lab[(p.getPosicionActual().getY()/40)-1][p.getPosicionActual().getX()/40] != 1 && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)-1)) {
-						decision = 38;
-					}
-					break;
-				//Derecha
-				case 39:
-					if (lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)+1] != 0 && lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)+1] != 1 && !p.esVisitado((p.getPosicionActual().getX()/40)+1,p.getPosicionActual().getY()/40)) {
-						decision = 39;
-					}
-					break;
-				//Abajo
-				case 40:
-					if (lab[(p.getPosicionActual().getY()/40)+1][p.getPosicionActual().getX()/40] != 0 && lab[(p.getPosicionActual().getY()/40)+1][p.getPosicionActual().getX()/40] != 1 && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)+1)) {
-						decision = 40;
-					}
-					break;
-				default:
-					decision = 0;
-					break;
+			//Izquierda
+			if (prioridad.get(i) == 37 && lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)-1] != 0 && lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)-1] != 1 && !p.esVisitado((p.getPosicionActual().getX()/40)-1,p.getPosicionActual().getY()/40)) {
+				decision = 37;
+				break;
+			}
+			//Arriba
+			if (prioridad.get(i) == 38 && lab[(p.getPosicionActual().getY()/40)-1][p.getPosicionActual().getX()/40] != 0 && lab[(p.getPosicionActual().getY()/40)-1][p.getPosicionActual().getX()/40] != 1 && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)-1)) {
+				decision = 38;
+				break;
+			}
+			//Derecha
+			if (prioridad.get(i) == 39 &&lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)+1] != 0 && lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)+1] != 1 && !p.esVisitado((p.getPosicionActual().getX()/40)+1,p.getPosicionActual().getY()/40)) {
+				decision = 39;
+				break;
+			}
+			//Abajo
+			if (prioridad.get(i) == 40 &&lab[(p.getPosicionActual().getY()/40)+1][p.getPosicionActual().getX()/40] != 0 && lab[(p.getPosicionActual().getY()/40)+1][p.getPosicionActual().getX()/40] != 1 && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)+1)) {
+				decision = 40;
+				break;
 			}
 		}
 		return decision;
 	}
 	public void insertarDesiciones(Coordenada actual,int caminos){
-		if (raiz.getCoord().getX() == actual.getX() && raiz.getCoord().getY() == actual.getY() && caminos == 1) {
+		if (raiz.getCoord().getX() == actual.getX()/40 && raiz.getCoord().getY() == actual.getY()/40 && caminos == 1) {
 			raiz.setNoHijos(caminos);
 		}else{
 			if (caminos > 1) {
 				if (!decisiones.buscar(raiz,actual,false)) {
 					Nodo padre = new Nodo();
 					padre = decisiones.buscarPadre(raiz);
-					decisiones.insertarNodo(raiz,actual,padre.getCoord());
+					decisiones.insertarNodo(raiz,actual,padre.getCoord(),caminos);
 					decisiones.actualizarPadre(1,padre.getCoord(),raiz);
 				}
 			}

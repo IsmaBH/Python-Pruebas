@@ -12,8 +12,8 @@ public class ArbolNario{
 		raiz = new Nodo(posicionInicial);
 		return raiz;
 	}
-	public void insertarNodo(Nodo nodo,Coordenada pos,Coordenada padre){
-		Nodo nuevo = new Nodo(pos);
+	public void insertarNodo(Nodo nodo,Coordenada pos,Coordenada padre,int caminos){
+		Nodo nuevo = new Nodo(pos,caminos);
 		//Verificamos si el nodo padre es la raiz
 		if (nodo.getCoord().getX() == padre.getX() && nodo.getCoord().getY() == padre.getY()) {
 			nodo.aumentarHijo(nuevo);
@@ -25,14 +25,14 @@ public class ArbolNario{
 					//System.out.println("Entre a buscar entre los hijos");
 				}else{
 					//System.out.println("Entre a buscar al siguiente nivel");
-					insertarNodo(nodo.hijos.get(i),pos,padre);
+					insertarNodo(nodo.hijos.get(i),pos,padre,caminos);
 				}
 			}
 		}
 	}
 	public void recorrer(Nodo raiz){
 		raiz.verInfo();
-		for (int i = 0; i < raiz.getNoHijos() ; i++ ) {
+		for (int i = 0; i < raiz.getVisitados() ; i++ ) {
 			recorrer(raiz.hijos.get(i));
 		}
 	}
@@ -44,7 +44,7 @@ public class ArbolNario{
 	}
 	public Nodo buscarPadre(Nodo raiz){
 		Nodo encontrado = new Nodo();
-		for (int i = 0; i<raiz.getNoHijos() ; i++ ) {
+		for (int i = 0; i<raiz.getVisitados() ; i++ ) {
 			encontrado = buscarPadre(raiz.hijos.get(i));
 		}
 		if (raiz.getOtro() == "Abierto") {
@@ -59,7 +59,7 @@ public class ArbolNario{
 				raiz.setOtro("Cerrado");
 			}
 		}else{
-			for (int i = 0; i<raiz.getNoHijos() ; i++) {
+			for (int i = 0; i<raiz.getVisitados() ; i++) {
 				actualizarPadre(cantidad,buscar,raiz.hijos.get(i));
 			}
 		}
@@ -68,9 +68,11 @@ public class ArbolNario{
 		if (raiz.getCoord().getX() == buscar.getX() && raiz.getCoord().getY() == buscar.getY()) {
 			encontrado = true;
 		}else{
-			for (int i = 0; i<raiz.getNoHijos() ; i++) {
-				encontrado = buscar(raiz.hijos.get(i),buscar,encontrado);
-			}
+			//if (raiz.getVisitados() >= 1) {
+				for (int i = 0; i < raiz.getVisitados() ; i++) {
+					encontrado = buscar(raiz.hijos.get(i),buscar,encontrado);
+				}
+			//}
 		}
 		return encontrado;
 	}
@@ -188,13 +190,18 @@ class Nodo{
 			this.hijosVisitados = 0;
 			this.otro = "Abierto";
 		}
+		public Nodo(Coordenada pos,int noHijos){
+			hijos = new ArrayList<Nodo>();
+			this.posicion = pos;
+			this.cantidadHijos = noHijos;
+			this.hijosVisitados = 0;
+			this.otro = "Abierto";
+		}
 		public Nodo(){
-			this.otro = "Nodo vacio";
 		}
 		//Metodos
 		public void aumentarHijo(Nodo hijo){
 			hijos.add(hijo);
-			cantidadHijos = hijos.size();
 		}
 		public void setNoHijos(int numero){
 			cantidadHijos = numero;
@@ -203,7 +210,7 @@ class Nodo{
 			cantidadHijos = hijos.size();
 		}
 		public void verInfo(){
-			System.out.println("("+posicion.getX()+","+posicion.getY()+","+otro+")");
+			System.out.println("("+posicion.getX()+","+posicion.getY()+","+otro+","+cantidadHijos+","+hijosVisitados+")");
 		}
 		public void verHijos(){
 			System.out.println(cantidadHijos);
