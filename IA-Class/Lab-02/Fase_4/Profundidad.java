@@ -64,7 +64,7 @@ public class Profundidad extends Algoritmo{
 			if (caminos > 1) {
 				if (!decisiones.buscar(raiz,actual,false)) {
 					Nodo padre = new Nodo();
-					padre = decisiones.buscarPadre(raiz);
+					padre = decisiones.buscarPadreProfundidad(raiz);
 					decisiones.insertarNodo(raiz,actual,padre.getCoord(),caminos);
 					decisiones.actualizarPadre(1,padre.getCoord(),raiz);
 				}
@@ -72,6 +72,6 @@ public class Profundidad extends Algoritmo{
 		}
 	}
 	public Coordenada esCallejon(){
-		return decisiones.buscarPadre(raiz).getCoord();
+		return decisiones.buscarPadreProfundidad(raiz).getCoord();
 	}
 }

@@ -42,14 +42,15 @@ public class ArbolNario{
 		}
 		raiz.verInfo();
 	}
-	public Nodo buscarPadre(Nodo raiz){
+	public Nodo buscarPadreProfundidad(Nodo raiz){
 		Nodo encontrado = new Nodo();
 		for (int i = 0; i<raiz.getVisitados() ; i++ ) {
-			encontrado = buscarPadre(raiz.hijos.get(i));
+			encontrado = buscarPadreProfundidad(raiz.hijos.get(i));
 		}
 		if (raiz.getOtro() == "Abierto") {
 			encontrado = raiz;
 		}
+		encontrado.verInfo();
 		return encontrado;
 	}
 	public void actualizarPadre(int cantidad,Coordenada buscar,Nodo raiz){

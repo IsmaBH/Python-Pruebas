@@ -205,6 +205,7 @@ public class Personaje extends JPanel{
 				if (this.tipo != "Sasquatch") {
 					ocupar = true;
 				}
+				break;
 			//Default se esta usando para los limites del mapa
 			default:
 				ocupar = false;
@@ -272,14 +273,11 @@ public class Personaje extends JPanel{
 		}else{
 			visitados.add(new Coordenada(x/40,(y/40)-1));
 		}
-		if (laberinto[(y/40)-1][x/40] != 0 && !esVisitado(x/40,(y/40)-1)) {
-			caminos++;
-		}
 		//Resultados
 		if (caminos > 1) {
 			System.out.println("Soy una decisión con "+caminos+" caminos");
 			algoritmo.insertarDesiciones(actual,caminos);
-			algoritmo.verDecisiones();
+			//algoritmo.verDecisiones();
 		}else if(caminos == 1){
 			System.out.println("Soy un camino!");
 			algoritmo.insertarDesiciones(actual,caminos);
