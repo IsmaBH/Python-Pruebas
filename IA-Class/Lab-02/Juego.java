@@ -28,13 +28,13 @@ public class Juego extends JPanel{
 	public void setPersonaje(String opcion,String opcion2){
 		switch(opcion){
 			case "1":
-				personaje = new Personaje(40,40,"Humano",opcion2);
+				personaje = new Personaje(40,400,"Humano",opcion2);
 				break;
 			case "2":
-				personaje = new Personaje(40,40,"Mono",opcion2);
+				personaje = new Personaje(40,400,"Mono",opcion2);
 				break;
 			case "3":
-				personaje = new Personaje(40,40,"Pulpo",opcion2);
+				personaje = new Personaje(40,400,"Pulpo",opcion2);
 				break;
 			default:
 				System.out.println("No haz escogido ningun tipo,intenta nuevamente");

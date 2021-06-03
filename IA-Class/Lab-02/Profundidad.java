@@ -58,7 +58,7 @@ public class Profundidad extends Algoritmo{
 		return decision;
 	}
 	public void insertarDesiciones(Coordenada actual,int caminos){
-		if (raiz.getCoord().getX() == actual.getX()/40 && raiz.getCoord().getY() == actual.getY()/40 && caminos == 1) {
+		if (raiz.getCoord().getX() == actual.getX() && raiz.getCoord().getY() == actual.getY() && caminos == 1) {
 			raiz.setNoHijos(caminos);
 		}else{
 			if (caminos > 1) {
@@ -71,7 +71,13 @@ public class Profundidad extends Algoritmo{
 			}
 		}
 	}
-	public Coordenada esCallejon(){
-		return decisiones.buscarPadreProfundidad(raiz).getCoord();
+	public Coordenada esCallejon(int x,int y){
+		Nodo padre = new Nodo();
+		Coordenada actual = new Coordenada(x/40,y/40);
+		padre = decisiones.buscarPadreProfundidad(raiz);
+		decisiones.insertarNodo(raiz,actual,padre.getCoord(),0);
+		decisiones.actualizarPadre(1,padre.getCoord(),raiz);
+		padre = decisiones.buscarPadreProfundidad(raiz);
+		return padre.getCoord();
 	}
 }

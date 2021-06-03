@@ -18,8 +18,8 @@ public class Laberinto extends JPanel{
 	//Atributos de la clase
 	private int fila = 0;
 	private int columna = 0;
-	private final int numeroFilas = 10;
-	private final int numeroColumnas = 10;
+	private final int numeroFilas = 17;
+	private final int numeroColumnas = 17;
 	private final int anchoBloque = 40;
 	private final int altoBloque = 40;
 	//Metodos de la clase
@@ -103,9 +103,9 @@ public class Laberinto extends JPanel{
 	}
 	//Metodo que obtiene el laberinto
 	public int[][] obtieneLaberinto(){
-		int[][] laberinto = new int[10][10];
+		int[][] laberinto = new int[17][17];
 		try{
-			String ruta = "Mapas/mapa_10_x_10.txt";
+			String ruta = "Mapas/mapa_15_x_15.txt";
 			BufferedReader br = new BufferedReader(new FileReader(ruta));
 			String linea = br.readLine();
 			int contador = 0;

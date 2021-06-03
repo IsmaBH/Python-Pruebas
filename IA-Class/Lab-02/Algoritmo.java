@@ -12,7 +12,7 @@ abstract class Algoritmo{
 	abstract public void verDecisiones();
 	abstract public int obtenerDireccion(int[][] lab,Personaje p);
 	abstract public void insertarDesiciones(Coordenada actual,int caminos);
-	abstract public Coordenada esCallejon();
+	abstract public Coordenada esCallejon(int x,int y);
 	//Constructor
 	public Algoritmo(String tipo){
 		this.nombre = tipo;

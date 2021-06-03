@@ -16,11 +16,17 @@ public class ArbolNario{
 		Nodo nuevo = new Nodo(pos,caminos);
 		//Verificamos si el nodo padre es la raiz
 		if (nodo.getCoord().getX() == padre.getX() && nodo.getCoord().getY() == padre.getY()) {
+			if (caminos == 0) {
+				nodo.setOtro("Cerrado");
+			}
 			nodo.aumentarHijo(nuevo);
 		}else{
 			//Si no buscamos al padre entre los hijos
-			for (int i = 0; i < nodo.getNoHijos() ; i++) {
+			for (int i = 0; i < nodo.getVisitados() ; i++) {
 				if (nodo.hijos.get(i).getCoord().getX() == padre.getX() && nodo.hijos.get(i).getCoord().getY() == padre.getY()) {
+					if (caminos == 0) {
+						nuevo.setOtro("Cerrado");
+					}
 					nodo.hijos.get(i).aumentarHijo(nuevo);
 					//System.out.println("Entre a buscar entre los hijos");
 				}else{
@@ -47,10 +53,9 @@ public class ArbolNario{
 		for (int i = 0; i<raiz.getVisitados() ; i++ ) {
 			encontrado = buscarPadreProfundidad(raiz.hijos.get(i));
 		}
-		if (raiz.getOtro() == "Abierto") {
+		if (raiz.getOtro() == "Abierto" && encontrado.posicion == null) {
 			encontrado = raiz;
 		}
-		encontrado.verInfo();
 		return encontrado;
 	}
 	public void actualizarPadre(int cantidad,Coordenada buscar,Nodo raiz){
@@ -199,6 +204,7 @@ class Nodo{
 			this.otro = "Abierto";
 		}
 		public Nodo(){
+			posicion = null;
 		}
 		//Metodos
 		public void aumentarHijo(Nodo hijo){
