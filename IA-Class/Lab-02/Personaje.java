@@ -58,6 +58,9 @@ public class Personaje extends JPanel{
 				algoritmo.insertarInicial(this.inicial);
 				break;
 			case "2":
+				algoritmo = new Anchura("Anchura");
+				algoritmo.setPrioridad();
+				algoritmo.insertarInicial(this.inicial);
 				break;
 			case "3":
 				break;
@@ -209,6 +212,7 @@ public class Personaje extends JPanel{
 			//Default se esta usando para los limites del mapa
 			default:
 				ocupar = false;
+				break;
 		}
 		return ocupar;
 	}

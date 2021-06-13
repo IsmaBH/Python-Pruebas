@@ -36,6 +36,15 @@ public class ArbolNario{
 			}
 		}
 	}
+	public boolean obtenerCompatibilidad(Nodo raiz,int n){
+		boolean compatible = false;
+		if (direccion == 38) {
+			//
+		}
+		for (int i = 0; i < raiz.getVisitados() ; i++ ) {
+			recorrer(raiz.hijos.get(i));
+		}
+	}
 	public void recorrer(Nodo raiz){
 		raiz.verInfo();
 		for (int i = 0; i < raiz.getVisitados() ; i++ ) {
@@ -91,48 +100,6 @@ public class ArbolNario{
 				mayor += cantidadNodos(raiz.hijos.get(i));
 			}
 			return mayor+1;
-		}
-	}
-	public int altura(Nodo raiz){
-		int mayor = 0;
-		int tempo = 0;
-		if (raiz == null) {
-			return 0;
-		}else{
-			for (int i = 0; i<raiz.getNoHijos() ; i++) {
-				tempo = altura(raiz.hijos.get(i));
-				if (tempo > mayor) {
-					mayor = tempo;
-				}
-			}
-			return mayor+1;
-		}
-	}
-	public int altura2(Nodo raiz){
-		int nivel = 0;
-		if (raiz == null) {
-			return 0;
-		}else{
-			for (int i = 0; i < raiz.getNoHijos() ; i++) {
-				nivel += altura2(raiz.hijos.get(i));
-				if (i == 0) {
-					nivel ++;
-				}
-			}
-			return nivel;
-		}
-	}
-	public int altura3(Nodo raiz,int nivel){
-		if (raiz == null) {
-			return 0;
-		}else{
-			for (int i = 0; i<raiz.getNoHijos() ; i++) {
-				nivel = altura3(raiz.hijos.get(i),nivel);
-				if (i == 0) {
-					nivel++;
-				}
-			}
-			return nivel;
 		}
 	}
 	public int numeroHojas(Nodo raiz){
