@@ -35,22 +35,22 @@ public class Profundidad extends Algoritmo{
 		int decision = 0;
 		for (int i = 0; i < prioridad.size() ; i++) {
 			//Izquierda
-			if (prioridad.get(i) == 37 && lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)-1] != 0 && lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)-1] != 1 && !p.esVisitado((p.getPosicionActual().getX()/40)-1,p.getPosicionActual().getY()/40)) {
+			if (prioridad.get(i) == 37 && p.esOcupable(lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)-1]) && !p.esVisitado((p.getPosicionActual().getX()/40)-1,p.getPosicionActual().getY()/40)) {
 				decision = 37;
 				break;
 			}
 			//Arriba
-			if (prioridad.get(i) == 38 && lab[(p.getPosicionActual().getY()/40)-1][p.getPosicionActual().getX()/40] != 0 && lab[(p.getPosicionActual().getY()/40)-1][p.getPosicionActual().getX()/40] != 1 && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)-1)) {
+			if (prioridad.get(i) == 38 && p.esOcupable(lab[(p.getPosicionActual().getY()/40)-1][p.getPosicionActual().getX()/40]) && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)-1)) {
 				decision = 38;
 				break;
 			}
 			//Derecha
-			if (prioridad.get(i) == 39 &&lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)+1] != 0 && lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)+1] != 1 && !p.esVisitado((p.getPosicionActual().getX()/40)+1,p.getPosicionActual().getY()/40)) {
+			if (prioridad.get(i) == 39 && p.esOcupable(lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)+1]) && !p.esVisitado((p.getPosicionActual().getX()/40)+1,p.getPosicionActual().getY()/40)) {
 				decision = 39;
 				break;
 			}
 			//Abajo
-			if (prioridad.get(i) == 40 &&lab[(p.getPosicionActual().getY()/40)+1][p.getPosicionActual().getX()/40] != 0 && lab[(p.getPosicionActual().getY()/40)+1][p.getPosicionActual().getX()/40] != 1 && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)+1)) {
+			if (prioridad.get(i) == 40 && p.esOcupable(lab[(p.getPosicionActual().getY()/40)+1][p.getPosicionActual().getX()/40]) && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)+1)) {
 				decision = 40;
 				break;
 			}

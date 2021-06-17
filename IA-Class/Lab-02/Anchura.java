@@ -3,7 +3,7 @@
 */
 import java.util.ArrayList;
 
-public class Anchura extends Algoritmo(){
+public class Anchura extends Algoritmo{
 	//Atributos
 	private ArbolNario decisiones = new ArbolNario();
 	private ArrayList<Integer> prioridad = new ArrayList<Integer>();
@@ -30,42 +30,51 @@ public class Anchura extends Algoritmo(){
 	}
 	public int obtenerDireccion(int[][] lab,Personaje p){
 		int decision = 0;
-		for (int i = 0; i < prioridad.size() ;i++ ) {
+		for (int i = 0; i < prioridad.size() ; i++) {
 			//Izquierda
-			if (prioridad.get(i) == 37 && p.esOcupable(lab[y/40][(x/40)-1])) {
-				boolean compatible = decisiones.obtenerCompatibilidad(raiz,x);
-				if (compatible == True) {
-				 	decision = 37;
-				 	break;
-				 } 
-			}
-			//Derecha
-			if (prioridad.get(i) == 39 && p.esOcupable(lab[y/40][(x/40)+1])) {
-				boolean compatible = decisiones.obtenerCompatibilidad(raiz,x);
-				if (compatible == True) {
-				 	decision = 39;
-				 	break;
-				 } 
+			if (prioridad.get(i) == 37 && p.esOcupable(lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)-1]) && !p.esVisitado((p.getPosicionActual().getX()/40)-1,p.getPosicionActual().getY()/40)) {
+				decision = 37;
+				break;
 			}
 			//Arriba
-			if (prioridad.get(i) == 38 && p.esOcupable(lab[(y/40)-1][x/40])) {
-				boolean compatible = decisiones.obtenerCompatibilidad(raiz,y);
-				if (compatible == True) {
-				 	decision = 38;
-				 	break;
-				} 
+			if (prioridad.get(i) == 38 && p.esOcupable(lab[(p.getPosicionActual().getY()/40)-1][p.getPosicionActual().getX()/40]) && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)-1)) {
+				decision = 38;
+				break;
+			}
+			//Derecha
+			if (prioridad.get(i) == 39 && p.esOcupable(lab[p.getPosicionActual().getY()/40][(p.getPosicionActual().getX()/40)+1]) && !p.esVisitado((p.getPosicionActual().getX()/40)+1,p.getPosicionActual().getY()/40)) {
+				decision = 39;
+				break;
 			}
 			//Abajo
-			if (prioridad.get(i) == 40 && p.esOcupable(lab[(y/40)+1][x/40])) {
-				boolean compatible = decisiones.obtenerCompatibilidad(raiz,x);
-				if (compatible == True) {
-				 	decision = 40;
-				 	break;
-				 } 
+			if (prioridad.get(i) == 40 && p.esOcupable(lab[(p.getPosicionActual().getY()/40)+1][p.getPosicionActual().getX()/40]) && !p.esVisitado(p.getPosicionActual().getX()/40,(p.getPosicionActual().getY()/40)+1)) {
+				decision = 40;
+				break;
 			}
 		}
 		return decision;
 	}
-	public void insertarDesiciones(Coordenada actual,int caminos,Personaje p){}
-	public Coordenada esCallejon(int x,int y){}
+	public void insertarDesiciones(Coordenada actual,int caminos){
+		if (raiz.getCoord().getX() == actual.getX() && raiz.getCoord().getY() == actual.getY() && caminos == 1) {
+			raiz.setNoHijos(caminos);
+		}else{
+			if (caminos > 1) {
+				if (!decisiones.buscar(raiz,actual,false)) {
+					Nodo padre = new Nodo();
+					padre = decisiones.buscarPadreProfundidad(raiz);
+					decisiones.insertarNodo(raiz,actual,padre.getCoord(),caminos);
+					decisiones.actualizarPadre(1,padre.getCoord(),raiz);
+				}
+			}
+		}
+	}
+	public Coordenada esCallejon(int x,int y){
+		Nodo padre = new Nodo();
+		Coordenada actual = new Coordenada(x/40,y/40);
+		padre = decisiones.buscarPadreProfundidad(raiz);
+		decisiones.insertarNodo(raiz,actual,padre.getCoord(),0);
+		decisiones.actualizarPadre(1,padre.getCoord(),raiz);
+		padre = decisiones.buscarPadreProfundidad(raiz);
+		return padre.getCoord();
+	}
 }

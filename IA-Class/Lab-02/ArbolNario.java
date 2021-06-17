@@ -36,15 +36,6 @@ public class ArbolNario{
 			}
 		}
 	}
-	public boolean obtenerCompatibilidad(Nodo raiz,int n){
-		boolean compatible = false;
-		if (direccion == 38) {
-			//
-		}
-		for (int i = 0; i < raiz.getVisitados() ; i++ ) {
-			recorrer(raiz.hijos.get(i));
-		}
-	}
 	public void recorrer(Nodo raiz){
 		raiz.verInfo();
 		for (int i = 0; i < raiz.getVisitados() ; i++ ) {
